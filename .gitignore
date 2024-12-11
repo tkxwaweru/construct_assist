@@ -1,0 +1,80 @@
+# Large saved pretrained model files
+model/sentiment_model/config.json
+model/sentiment_model/model.safetensors
+model/sentiment_model/sentencepiece.bpe.model
+model/sentiment_model/special_tokens_map.json
+model/sentiment_model/tokenizer_config.json
+model/datasets/data_swahili.xlsx
+
+# Operating System Specific Junk Files (Global)
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+*~
+.directory
+.Trash-*
+
+# Environment Files (Specific to web_app)
+web_app/.env
+web_app/.vagrant
+web_app/Vagrantfile
+
+# Temporary Files (Specific to web_app)
+web_app/writable/cache/*
+!web_app/writable/cache/index.html
+web_app/writable/logs/*
+!web_app/writable/logs/index.html
+web_app/writable/session/*
+!web_app/writable/session/index.html
+web_app/writable/uploads/*
+!web_app/writable/uploads/index.html
+web_app/writable/debugbar/*
+web_app/php_errors.log
+
+# User Guide Temp Files (Specific to web_app)
+web_app/user_guide_src/build/*
+web_app/user_guide_src/cilexer/build/*
+web_app/user_guide_src/cilexer/dist/*
+web_app/user_guide_src/cilexer/pycilexer.egg-info/*
+
+# Test Files (Specific to web_app)
+web_app/tests/coverage*
+web_app/phpunit
+
+# Composer (Specific to web_app)
+web_app/vendor/
+
+# IDE / Development Files (Specific to web_app)
+web_app/_modules/*
+web_app/.php-version
+web_app/.idea/
+web_app/*.iml
+web_app/nbproject/
+web_app/build/
+web_app/nbbuild/
+web_app/dist/
+web_app/nbdist/
+web_app/nbactions.xml
+web_app/nb-configuration.xml
+web_app/.nb-gradle/
+web_app/*.tmlanguage.cache
+web_app/*.tmPreferences.cache
+web_app/*.stTheme.cache
+web_app/*.sublime-workspace
+web_app/*.sublime-project
+web_app/.phpintel
+web_app/api/
+web_app/.vscode/
+web_app/results/
+web_app/phpunit*.xml
+web_app/.phpunit.*.cache

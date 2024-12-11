@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+
+*{
+  background-color: rgb(69, 69, 129);
+}
+
+h3{
+  margin-top: 40px;
+  color: white;
+  font-family: quicksand;
+  text-align: center;
+  font-size: 30px;
+}
+
