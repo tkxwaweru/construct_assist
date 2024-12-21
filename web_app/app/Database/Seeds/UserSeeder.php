@@ -9,10 +9,10 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        for($i = 0; $i < 401; $i++){
-           $user = $this->generateFakeUser();
+        for ($i = 0; $i < 1000; $i++) { // Change loop limit to 1000
+            $user = $this->generateFakeUser();
 
-           $this->db->table("tbl_users")->insert($user);
+            $this->db->table("tbl_users")->insert($user);
         }
     }
 
@@ -20,16 +20,12 @@ class UserSeeder extends Seeder
     {
         $fakerObject = Factory::create();
 
-        $role_id = [
-            "4"
-        ];
-        
         return array(
             "name" => $fakerObject->name,
             "email" => $fakerObject->email,
-            "phone_number" => '07'. $fakerObject->numerify('##########'),
+            "phone_number" => '07' . $fakerObject->numerify('########'),
             "password" => $fakerObject->regexify('[A-Za-z0-9!@#$%^&*()]{60,70}'),
-            "role_id" => $fakerObject->randomElement($role_id)
+            "role_id" => $fakerObject->randomElement([2, 3, 4]) // Random role_id
         );
     }
 }

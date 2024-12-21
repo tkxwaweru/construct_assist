@@ -30,7 +30,7 @@
         </nav>
 
         <div class="main-body">
-            <h2>Professionals Search Results (Rated out of 5)</h2>
+            <h2>Reliable Professonals</h2>
             <div class="form-container">
                 <div class="content">
                     <div class="search-results">
