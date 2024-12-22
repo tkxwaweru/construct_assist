@@ -17,14 +17,14 @@ use Config\Services;
 
 class Manager extends BaseController
 {
-  public function __construct()
+    public function __construct()
     {
         helper(['url', 'form']);
-    }  
-  
-  public function managerHome()
+    }
+
+    public function managerHome()
     {
-      return redirect()->to('manager-dashboard');
+        return redirect()->to('manager-dashboard');
     }
 
     public function managerProfile()
@@ -50,115 +50,98 @@ class Manager extends BaseController
     public function searchProfessionals()
     {
         $profession_id = $this->request->getPost('profession_id');
+        $county = $this->request->getPost('county');  // Get the county filter from the form
 
         $professionalsModel = new ProfessionalsModel();
         $userModel = new UserModel();
         $professionsModel = new ProfessionsModel();
         $professionalEngagementsModel = new ProfessionalEngagementsModel();
 
-        $professionals = $professionalsModel->where('profession_id', $profession_id)->findAll();
+        // Build the query to filter by both profession_id and county
+        $professionals = $professionalsModel->where('profession_id', $profession_id);
+
+        if (!empty($county)) {
+            $professionals = $professionals->where('county', $county);  // Add county filter
+        }
+
+        $professionals = $professionals->findAll();
 
         $professionalsData = [];
+        $profession = null; // Initialize $profession variable
+
         foreach ($professionals as $professional) {
             $user_id = $professional['user_id'];
             $user = $userModel->find($user_id);
 
             if ($user !== null) {
+                // Use already fetched professional data instead of fetching again
                 $profession_id = $professional['profession_id'];
-                $profession = $professionsModel->find($profession_id);
+                $profession = $professionsModel->find($profession_id); // Get profession details
 
-                // Query ProfessionalEngagementsModel for active_engagement
+                // Query ProfessionalEngagementsModel for active engagement
                 $professionalEngagement = $professionalEngagementsModel
                     ->where('professional_id', $user_id)
                     ->where('active_engagement', 1)
                     ->first();
 
-                // Exclude data with matching user_id from professionalsData
-                if ($professionalEngagement === null) {
+                // Exclude data with active engagement and include reliable professionals
+                if ($professionalEngagement === null && $professional['reliable'] == 1) {
                     $professionalsData[] = [
                         'name' => $user['name'],
                         'email' => $user['email'],
                         'phone_number' => $user['phone_number'],
-                        'average_rating' => $professional['average_rating'],
+                        'county' => $professional['county'],
                         'profession_name' => ($profession !== null) ? $profession['profession_name'] : null,
+                        'company' => $professional['company'],
+                        'reliable' => $professional['reliable'],
                     ];
                 }
             }
         }
 
+        // Handle case where no professionals were found
         $data = [
-            'profession_name' => ($profession !== null) ? $profession['profession_name'] : null,
+            'profession_name' => ($profession !== null) ? $profession['profession_name'] : 'No profession found',
             'professionalsData' => $professionalsData,
+            'county' => !empty($professionalsData) ? $professionalsData[0]['county'] : 'No county specified'
         ];
 
         return view('manager-dashboards/professionals-search', $data);
     }
 
 
-    
-    // public function searchServices()
-    // {
-    //     $service_id = $this->request->getPost('service_id');
-
-    //     $providersModel = new ProvidersModel();
-    //     $userModel = new UserModel();
-    //     $servicesModel = new ServicesModel();
-
-    //     $providers = $providersModel->where('service_id', $service_id)->findAll();
-
-    //     $providersData = [];
-    //     $service_name = null; // Initialize the variable outside the loop
-    //     foreach ($providers as $provider) {
-    //         $user_id = $provider['user_id'];
-    //         $user = $userModel->find($user_id);
-
-    //         if ($user !== null) {
-    //             $service_id = $provider['service_id'];
-    //             $service = $servicesModel->find($service_id);
-
-    //             $service_name = ($service !== null) ? $service['service_name'] : null; // Move inside the loop
-
-    //             $providersData[] = [
-    //                 'name' => $user['name'],
-    //                 'email' => $user['email'],
-    //                 'phone_number' => $user['phone_number'],
-    //                 'service_name' => ($service !== null) ? $service['service_name'] : null,
-    //                 'company' => ($provider !== null) ? $provider['company'] : null,
-    //                 'average_rating' => $provider['average_rating'],
-    //             ];
-    //         }
-    //     }
-
-    //     $data = [
-    //         'service_name' => $service_name,
-    //         'providersData' => $providersData,
-    //     ];
-
-    //     return view('manager-dashboards/services-search', $data);
-    // } 
 
     public function searchServices()
     {
         $service_id = $this->request->getPost('service_id');
+        $county = $this->request->getPost('county');  // Get the county filter from the form
 
         $providersModel = new ProvidersModel();
         $userModel = new UserModel();
         $servicesModel = new ServicesModel();
         $providerEngagementsModel = new ProviderEngagementsModel();
 
-        $providers = $providersModel->where('service_id', $service_id)->findAll();
+        // Build the query to filter by both profession_id and county
+        $providers = $providersModel->where('service_id', $service_id);
+
+        if (!empty($county)) {
+            $providers = $providers->where('county', $county);  // Add county filter
+        }
+
+        $providers = $providersModel->findAll();
 
         $providersData = [];
         $service_name = null; // Initialize the variable outside the loop
+
         foreach ($providers as $provider) {
             $user_id = $provider['user_id'];
             $user = $userModel->find($user_id);
 
             if ($user !== null) {
                 $service_id = $provider['service_id'];
-                $service = $servicesModel->find($service_id);
+                $service_name = $servicesModel->find($service_id);
 
-                $service_name = ($service !== null) ? $service['service_name'] : null; // Move inside the loop
+                //$service_name = ($service !== null) ? $service['service_name'] : null; // Move inside the loop
 
                 // Query ProviderEngagementsModel for active_engagement
                 $providerEngagement = $providerEngagementsModel
@@ -167,22 +150,25 @@ class Manager extends BaseController
                     ->first();
 
                 // Exclude data with matching user_id from providersData
-                if ($providerEngagement === null) {
+                if ($providerEngagement === null && $provider['reliable'] == 1) {
                     $providersData[] = [
                         'name' => $user['name'],
                         'email' => $user['email'],
                         'phone_number' => $user['phone_number'],
-                        'service_name' => ($service !== null) ? $service['service_name'] : null,
-                        'company' => ($provider !== null) ? $provider['company'] : null,
-                        'average_rating' => $provider['average_rating'],
+                        'county' => $provider['county'],
+                        'service_name' => ($service_name !== null) ? $service_name['service_name'] : null,
+                        'company' => $provider['company'],
+                        'reliable' => $provider['reliable'],
                     ];
                 }
             }
         }
 
+        // Handle case where no service providers were found
         $data = [
-            'service_name' => $service_name,
+            'service_name' => ($service_name !== null) ? $service_name['service_name'] : 'No service found',
             'providersData' => $providersData,
+            'county' => !empty($providersData) ? $providersData[0]['county'] : 'No county specified'
         ];
 
         return view('manager-dashboards/services-search', $data);
@@ -194,29 +180,29 @@ class Manager extends BaseController
     {
         // Retrieve the posted professional email
         $postEmail = $this->request->getPost('professional');
-        
+
         // Retrieve the active session email
         $sessionEmail = session('email');
-        
+
         // Query the tbl_users table to find the manager's user ID where the email matches the session email
         $userModel = new UserModel();
         $manager = $userModel->where('email', $sessionEmail)->first();
         $managerId = ($manager !== null) ? $manager['user_id'] : null;
-        
+
         // Query the tbl_users table to find the professional's user details where the email matches the posted email
         $professional = $userModel->where('email', $postEmail)->first();
         $professionalId = ($professional !== null) ? $professional['user_id'] : null;
-        
+
         if ($managerId !== null && $professionalId !== null) {
             // Retrieve the additional details from tbl_users using professionalId
             $professionalDetails = $userModel->find($professionalId);
-            
+
             if ($professionalDetails !== null) {
                 $professionalName = $professionalDetails['name'];
                 $professionalEmail = $professionalDetails['email'];
                 $professionalPhoneNumber = $professionalDetails['phone_number'];
                 $professionalRoleId = $professionalDetails['role_id'];
-                
+
                 // Store the manager's user ID, professional's user ID, and other details in the tbl_professional_engagements table
                 $professionalEngagementsModel = new ProfessionalEngagementsModel();
                 $professionalEngagementsModel->insert([
@@ -235,75 +221,75 @@ class Manager extends BaseController
         $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
         $email->setTo($postEmail);
         $email->setSubject('PROJECT RECRUITMENT');
-        $email->setMessage('Good day!'.'<br><br>' . 'You have been recruited by '. $sessionEmail .' to collaborate on a 
+        $email->setMessage('Good day!' . '<br><br>' . 'You have been recruited by ' . $sessionEmail . ' to collaborate on a 
         construction project.<br><br> 
         This project manager shall contact you with more details. Upon job completion your services shall be rated 
         (out of 5) by the project manager. You shall receive an email with details on this after you have been rated.<br><br>
             Thank you for using Construct-Assist');
 
         $email->send();
-        
+
         // Redirect to a success page or perform any further actions
         return redirect()->to('managerEngagements');
     }
-    
 
-    
+
+
     public function selectProviderEngagement()
     {
-             // Retrieve the posted professional email
-             $postEmail = $this->request->getPost('provider');
-        
-             // Retrieve the active session email
-             $sessionEmail = session('email');
-             
-             // Query the tbl_users table to find the manager's user ID where the email matches the session email
-             $userModel = new UserModel();
-             $manager = $userModel->where('email', $sessionEmail)->first();
-             $managerId = ($manager !== null) ? $manager['user_id'] : null;
-             
-             // Query the tbl_users table to find the professional's user details where the email matches the posted email
-             $provider = $userModel->where('email', $postEmail)->first();
-             $providerId = ($provider !== null) ? $provider['user_id'] : null;
-             
-             if ($managerId !== null && $providerId !== null) {
-                 // Retrieve the additional details from tbl_users using professionalId
-                 $providerDetails = $userModel->find($providerId);
-                 
-                 if ($providerDetails !== null) {
-                     $providerName = $providerDetails['name'];
-                     $providerEmail = $providerDetails['email'];
-                     $providerPhoneNumber = $providerDetails['phone_number'];
-                     $providerRoleId = $providerDetails['role_id'];
-                     
-                     // Store the manager's user ID, professional's user ID, and other details in the tbl_professional_engagements table
-                     $providerEngagementsModel = new ProviderEngagementsModel();
-                     $providerEngagementsModel->insert([
-                         'manager_id' => $managerId,
-                         'provider_id' => $providerId,
-                         'name' => $providerName,
-                         'email' => $providerEmail,
-                         'phone_number' => $providerPhoneNumber,
-                         'role_id' => $providerRoleId,
-                         'active_engagement' => 1
-                     ]);
-                 }
-             }
+        // Retrieve the posted professional email
+        $postEmail = $this->request->getPost('provider');
 
-                $email = \Config\Services::email();
-                $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
-                $email->setTo($postEmail);
-                $email->setSubject('PROJECT RECRUITMENT');
-                $email->setMessage('Good day!'.'<br><br>' . 'You have been recruited by '. $sessionEmail .' to collaborate on a 
+        // Retrieve the active session email
+        $sessionEmail = session('email');
+
+        // Query the tbl_users table to find the manager's user ID where the email matches the session email
+        $userModel = new UserModel();
+        $manager = $userModel->where('email', $sessionEmail)->first();
+        $managerId = ($manager !== null) ? $manager['user_id'] : null;
+
+        // Query the tbl_users table to find the professional's user details where the email matches the posted email
+        $provider = $userModel->where('email', $postEmail)->first();
+        $providerId = ($provider !== null) ? $provider['user_id'] : null;
+
+        if ($managerId !== null && $providerId !== null) {
+            // Retrieve the additional details from tbl_users using professionalId
+            $providerDetails = $userModel->find($providerId);
+
+            if ($providerDetails !== null) {
+                $providerName = $providerDetails['name'];
+                $providerEmail = $providerDetails['email'];
+                $providerPhoneNumber = $providerDetails['phone_number'];
+                $providerRoleId = $providerDetails['role_id'];
+
+                // Store the manager's user ID, professional's user ID, and other details in the tbl_professional_engagements table
+                $providerEngagementsModel = new ProviderEngagementsModel();
+                $providerEngagementsModel->insert([
+                    'manager_id' => $managerId,
+                    'provider_id' => $providerId,
+                    'name' => $providerName,
+                    'email' => $providerEmail,
+                    'phone_number' => $providerPhoneNumber,
+                    'role_id' => $providerRoleId,
+                    'active_engagement' => 1
+                ]);
+            }
+        }
+
+        $email = \Config\Services::email();
+        $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
+        $email->setTo($postEmail);
+        $email->setSubject('PROJECT RECRUITMENT');
+        $email->setMessage('Good day!' . '<br><br>' . 'You have been recruited by ' . $sessionEmail . ' to collaborate on a 
                 construction project.<br><br> 
                 This project manager shall contact you with more details. Upon job completion your services shall be rated 
                 (out of 5) by the project manager. You shall receive an email with details on this after you have been rated.<br><br>
                     Thank you for using Construct-Assist');
-    
-                $email->send();
-             
-             // Redirect to a success page or perform any further actions
-             return redirect()->to('managerEngagements');
+
+        $email->send();
+
+        // Redirect to a success page or perform any further actions
+        return redirect()->to('managerEngagements');
     }
 
     public function managerEngagements()
@@ -322,12 +308,12 @@ class Manager extends BaseController
             $professionalEngagementsModel = new ProfessionalEngagementsModel();
 
             $providerEngagements = $providerEngagementsModel->where('manager_id', $managerId)
-                                                            ->where('active_engagement', 1)
-                                                            ->findAll();
+                ->where('active_engagement', 1)
+                ->findAll();
 
             $professionalEngagements = $professionalEngagementsModel->where('manager_id', $managerId)
-                                                                    ->where('active_engagement', 1)
-                                                                    ->findAll();
+                ->where('active_engagement', 1)
+                ->findAll();
 
             // Prepare the data array
             $data = [
@@ -340,7 +326,7 @@ class Manager extends BaseController
         }
     }
 
-    
+
     public function rateSelect()
     {
         $email = $this->request->getPost('email'); // Get the posted email
@@ -373,7 +359,7 @@ class Manager extends BaseController
         $postEmail = $this->request->getPost('email');
         $score = $this->request->getPost('score');
         $comment = $this->request->getPost('comment');
-    
+
         // Get user_id and role_id based on the posted email
         $userModel = new UserModel();
         $user = $userModel->where('email', $postEmail)->first();
@@ -381,10 +367,10 @@ class Manager extends BaseController
             // Handle case when user is not found
             // Redirect or display an error message
         }
-    
+
         $user_id = $user['user_id'];
         $role_id = $user['role_id'];
-    
+
         // Process based on role_id
         if ($role_id == 3) {
             // Insert into ProfessionalRatingsModel
@@ -394,14 +380,14 @@ class Manager extends BaseController
                 'score' => $score,
                 'comment' => $comment
             ]);
-    
+
             // Update average_rating in ProfessionalsModel
             $professionalsModel = new ProfessionalsModel();
             $professional = $professionalsModel->where('user_id', $user_id)->first();
             $averageRating = ($professional['average_rating'] + $score) / 2;
             $professionalsModel->where('user_id', $user_id)->set(['average_rating' => $averageRating])->update();
-    
-    
+
+
             // Update ProfessionalEngagementsModel
             $professionalEngagementsModel = new ProfessionalEngagementsModel();
             $professionalEngagement = $professionalEngagementsModel->where('professional_id', $user_id)
@@ -421,13 +407,13 @@ class Manager extends BaseController
                 'score' => $score,
                 'comment' => $comment
             ]);
-    
+
             // Update average_rating in ProvidersModel
             $providersModel = new ProvidersModel();
             $provider = $providersModel->where('user_id', $user_id)->first();
             $averageRating = ($provider['average_rating'] + $score) / 2;
             $providersModel->where('user_id', $user_id)->set(['average_rating' => $averageRating])->update();
-    
+
             // Update ProviderEngagementsModel
             $providerEngagementsModel = new ProviderEngagementsModel();
             $providerEngagement = $providerEngagementsModel->where('provider_id', $user_id)
@@ -440,23 +426,24 @@ class Manager extends BaseController
                 ]);
             }
         }
-    
+
         $email = \Config\Services::email();
         $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
         $email->setTo($postEmail);
         $email->setSubject('SERVICE RATING');
-        $email->setMessage('Good day!'.'<br><br>' . 'Your Services have been rated a ' .$score. ' (out of 5) by '. $sessionEmail .'<br><br> 
+        $email->setMessage('Good day!' . '<br><br>' . 'Your Services have been rated a ' . $score . ' (out of 5) by ' . $sessionEmail . '<br><br> 
                 Log in to your account to view more details.' . ' ' .
-                    "<a href='" . base_url('login'). "'> Click here</a>".'<br><br>'.
-                    'Thank you for using Construct-Assist');
-    
+            "<a href='" . base_url('login') . "'> Click here</a>" . '<br><br>' .
+            'Thank you for using Construct-Assist');
+
         $email->send();
         // Redirect or display success message
         return redirect()->to('managerEngagements');
     }
-    
 
-    public function managerPasswordRequest(){
+
+    public function managerPasswordRequest()
+    {
         $email = session('email');
 
         $values = ['email' => $email];
@@ -475,11 +462,11 @@ class Manager extends BaseController
             return view('redirects/reset.php');
         } else {
             return redirect()->to('reset')->with('fail', 'Something went wrong, please try again.')->withInput();
-        }  
+        }
     }
-    
+
     public function managerAccountDelete()
-    {           
+    {
         $sessionEmail = session('email');
 
         $userModel = new UserModel();
@@ -489,17 +476,17 @@ class Manager extends BaseController
         if ($user) {
             // Update the account status to 0
 
-        $email = \Config\Services::email();
-        $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
-        $email->setTo($sessionEmail);
-        $email->setSubject('ACCOUNT DELETED');
-        $email->setMessage('Good day!<br><br>It seems you have decided to delete your account. We are sorry to see you go.<br>
+            $email = \Config\Services::email();
+            $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
+            $email->setTo($sessionEmail);
+            $email->setSubject('ACCOUNT DELETED');
+            $email->setMessage('Good day!<br><br>It seems you have decided to delete your account. We are sorry to see you go.<br>
         Do not worry, you can always recover your account by sending us an email at construct.assist.254@gmail.com and we shall process your request within 24 hours.          
         <br><br>Thank you for using Construct-Assist');
-    
-        $email->send();
 
-        $userModel->update($user['user_id'], ['account_status' => 0]);
+            $email->send();
+
+            $userModel->update($user['user_id'], ['account_status' => 0]);
         }
         return redirect()->to('login')->with('fail', 'Account deleted.');
     }

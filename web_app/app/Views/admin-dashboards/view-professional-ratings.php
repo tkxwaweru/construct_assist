@@ -33,8 +33,8 @@
         <a href="<?php echo site_url('adminProfile'); ?>">Manage Profile</a>
         <a href="<?php echo site_url('registerAdmin'); ?>">Register new Admin</a>
         <a href="<?php echo site_url('viewUsers'); ?>">View User Records</a>
-        <a class="active" href="#">View Professional Ratings</a>
-        <a href="<?php echo site_url('viewProviderRatings'); ?>">View Provider Ratings</a>
+        <a class="active" href="#">Professional Reviews</a>
+        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Reviews</a>
         <a class="log-out-button" href="#" onclick="confirmLogout()">Logout</a>
       </div>
     </nav>
@@ -46,20 +46,20 @@
           <p>Professional ratings:</p><br>
           <table>
             <tr>
-              <th>Rating ID</th>
+              <th>Index</th>
               <th>Professional ID</th>
-              <th>Score</th>
-              <th>Comment</th>
-              <th>Rated on</th>
+              <th>Review text</th>
+              <th>Review sentiment</th>
+              <th>Reviewed on</th>
             </tr>
             <tr>
             <?php foreach ($professional_ratings as $professional_rating): ?>
               <tr>
                 <td><?= $professional_rating['professional_rating_id']; ?></td>
                 <td><?= $professional_rating['professional_id']; ?></td>
-                <td><?= $professional_rating['score']; ?></td>
-                <td><?= $professional_rating['comment']; ?></td>
-                <td><?= $professional_rating['rated_on']; ?></td>
+                <td><?= $professional_rating['review_text']; ?></td>
+                <td><?= $professional_rating['review_sentiment']; ?></td>
+                <td><?= $professional_rating['reviewed_on']; ?></td>
               </tr>
             <?php endforeach; ?>
             </tr>

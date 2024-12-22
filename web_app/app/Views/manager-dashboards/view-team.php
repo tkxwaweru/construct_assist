@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard.Team</title>
@@ -7,6 +8,7 @@
     <!-- Font Awesome Cdn Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 </head>
+
 <body>
     <header class="header">
         <div class="title">
@@ -35,7 +37,8 @@
             <h2>View Team</h2>
             <div class="promo_card">
                 <h2>Profile: <?= session('name'); ?></h2>
-                <p>Your team:</p>
+                <br>
+                <h3>Your team:</h3>
                 <table>
                     <thead>
                         <tr>
@@ -44,6 +47,7 @@
                             <th>Phone Number</th>
                             <th>Designation</th>
                             <th>Recruitment Date</th>
+                            <th>Action</th> <!-- Added Action column for rating -->
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +59,10 @@
                                     <td><?= $providerEngagement['phone_number']; ?></td>
                                     <td><?= ($providerEngagement['role_id'] == 3) ? 'Professional' : 'Service provider'; ?></td>
                                     <td><?= $providerEngagement['recruitment_date']; ?></td>
+                                    <td>
+                                        <!-- Rating button for provider -->
+                                        <button type="button" class="enlist-button" onclick="rateService('<?= $providerEngagement['email']; ?>')">Dismiss</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -67,51 +75,40 @@
                                     <td><?= $professionalEngagement['phone_number']; ?></td>
                                     <td><?= ($professionalEngagement['role_id'] == 3) ? 'Professional' : 'Service provider'; ?></td>
                                     <td><?= $professionalEngagement['recruitment_date']; ?></td>
+                                    <td>
+                                        <!-- Rating button for professional -->
+                                        <button type="button" class="enlist-button" onclick="rateService('<?= $professionalEngagement['email']; ?>')">Dismiss</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
                 </table>
                 <br><br><br>
-                <form action="<?php echo base_url('rateSelect')?>" method="post">
-                    <div class="content">
-                        <h3>Service dismissal and performance review:</h3>
-                        <br>
-                        <div class="form-content">
-                            <div class="input">
-                                <label for="">Select the individual you would like to rate and dismiss:</label>
-                                <select class="form-input" id="email" name="email">
-                                    <?php if (!empty($providerEngagements)) : ?>
-                                        <?php foreach ($providerEngagements as $providerEngagement) : ?>
-                                            <option value="<?= $providerEngagement['email']; ?>">
-                                                <?= $providerEngagement['name']; ?> (Email: <?= $providerEngagement['email']; ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-
-                                    <?php if (!empty($professionalEngagements)) : ?>
-                                        <?php foreach ($professionalEngagements as $professionalEngagement) : ?>
-                                            <option value="<?= $professionalEngagement['email']; ?>">
-                                                <?= $professionalEngagement['name']; ?> (Email: <?= $professionalEngagement['email']; ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-                            <div class="input">
-                                <button type="submit" class="form-button">Rate Service</button> 
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <!-- Removed the form that was previously used for rating -->
             </div>
         </div>
     </div>
+
+    <!-- Hidden Form to Handle Rating -->
+    <form id="rateForm" action="<?php echo base_url('rateSelect') ?>" method="post" style="display:none;">
+        <input type="hidden" name="email" id="emailToRate" value="">
+    </form>
 
     <script>
         function confirmLogout() {
             return confirm('Are you sure you want to logout?');
         }
+
+        // Function to set the email and submit the rate form
+        function rateService(email) {
+            // Set the email to the hidden input field
+            document.getElementById('emailToRate').value = email;
+
+            // Submit the form
+            document.getElementById('rateForm').submit();
+        }
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Dasboard.Profile</title>
@@ -22,6 +23,7 @@
   </script>
 
 </head>
+
 <body>
   <header class="header">
     <div class="title">
@@ -49,14 +51,16 @@
     <div class="main-body">
       <h2>Manage Profile</h2>
       <div class="promo_card">
-          <h2>Profile: <?= session('name'); ?></h2>
-          <p>Click on an option:</p>
-          <ol>
-            <li>Reset Password: <a href="<?php echo site_url('managerPasswordRequest'); ?>">Click here</a></li>
-            <li>Delete Account: <a href="#" onclick="confirmAccountDeletion()">Click here</a></li>
-          </ol>
+        <h2>Profile: <?= session('name'); ?></h2>
+        <br>
+        <br>
+        <h2>Click on an option:</h2>
+        <p>Reset Password: <a href="<?php echo site_url('professionalPasswordRequest'); ?>">Click here</a></p>
+        <p>Delete Account: <a href="<?php echo site_url('professionalAccountDelete'); ?>" onclick="return confirmDelete()">Click here</a></p>
+        <br>
       </div>
     </div>
   </div>
 </body>
+
 </html>

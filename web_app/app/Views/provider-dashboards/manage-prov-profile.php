@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Dashboard.Provider</title>
-    <link rel="stylesheet" href="<?= base_url('css/provider-dashboard.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('css/professional-dashboard.css') ?>">
     <!-- Font Awesome Cdn Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 </head>
@@ -24,7 +24,7 @@
             <div class="side_navbar">
                 <a href="<?php echo site_url('providerHome'); ?>">Home</a>
                 <a class="active" href="<?php echo site_url('providerProfile'); ?>">Manage Profile</a>
-                <a href="<?php echo site_url('providerRatings'); ?>">View Ratings</a>
+                <a href="<?php echo site_url('providerRatings'); ?>">Review breakdown</a>
                 <a class="log-out-button" href="<?php echo site_url('logout'); ?>" onclick="return confirmLogout()">Logout</a>
             </div>
         </nav>
@@ -33,12 +33,14 @@
             <h2>Manage Profile</h2>
             <div class="promo_card">
                 <h2>Profile: <?= session('name'); ?></h2>
-                <p>Click on an option:</p>
-                <ol>
-                    <li>Reset Password: <a href="<?php echo site_url('providerPasswordRequest'); ?>">Click here</a></li>
-                    <li>Delete Account: <a href="<?php echo site_url('providerAccountDelete'); ?>" onclick="return confirmDelete()">Click here</a></li>
-                </ol>
                 <br>
+                <br>
+                <h2>Click on an option:</h2>
+                <p>Reset Password: <a href="<?php echo site_url('professionalPasswordRequest'); ?>">Click here</a></p>
+                <p>Delete Account: <a href="<?php echo site_url('professionalAccountDelete'); ?>" onclick="return confirmDelete()">Click here</a></p>
+                <br>
+                <br>
+                <h2>Service provider certification and updates:</h2>
                 <div class="form-container">
                     <div class="content">
                         <form action="<?php echo base_url('providerUpdate')?>" method="post" enctype="multipart/form-data">

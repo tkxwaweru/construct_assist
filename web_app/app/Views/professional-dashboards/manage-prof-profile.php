@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard.Professional</title>
@@ -7,6 +8,7 @@
     <!-- Font Awesome Cdn Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 </head>
+
 <body>
     <header class="header">
         <div class="title">
@@ -24,7 +26,7 @@
             <div class="side_navbar">
                 <a href="<?php echo site_url('professionalHome'); ?>">Home</a>
                 <a class="active" href="<?php echo site_url('professionalProfile'); ?>">Manage Profile</a>
-                <a href="<?php echo site_url('professionalRatings'); ?>">View Ratings</a>
+                <a href="<?php echo site_url('professionalRatings'); ?>">Review breakdown</a>
                 <a class="log-out-button" href="<?php echo site_url('logout'); ?>" onclick="return confirmLogout()">Logout</a>
             </div>
         </nav>
@@ -33,21 +35,23 @@
             <h2>Manage Profile</h2>
             <div class="promo_card">
                 <h2>Profile: <?= session('name'); ?></h2>
-                <p>Click on an option:</p>
-                <ol>
-                    <li>Reset Password: <a href="<?php echo site_url('professionalPasswordRequest'); ?>">Click here</a></li>
-                    <li>Delete Account: <a href="<?php echo site_url('professionalAccountDelete'); ?>" onclick="return confirmDelete()">Click here</a></li>
-                </ol>
                 <br>
+                <br>
+                <h2>Click on an option:</h2>
+                <p>Reset Password: <a href="<?php echo site_url('professionalPasswordRequest'); ?>">Click here</a></p>
+                <p>Delete Account: <a href="<?php echo site_url('professionalAccountDelete'); ?>" onclick="return confirmDelete()">Click here</a></p>
+                <br>
+                <br>
+                <h2>Professional certification and profession updates:</h2>
                 <div class="form-container">
                     <div class="content">
-                        <form action="<?php echo base_url('professionalUpdate')?>" method="post" enctype="multipart/form-data">
+                        <form action="<?php echo base_url('professionalUpdate') ?>" method="post" enctype="multipart/form-data">
                             <?php csrf_field(); ?>
-                            <?php if(!empty(session()->getFlashdata('fail'))) : ?>
+                            <?php if (!empty(session()->getFlashdata('fail'))) : ?>
                                 <div class="alert alert-danger"><?= session()->getFlashdata('fail'); ?></div>
                             <?php endif ?>
 
-                            <?php if(!empty(session()->getFlashdata('success'))) : ?>
+                            <?php if (!empty(session()->getFlashdata('success'))) : ?>
                                 <div class="alert alert-success"><?= session()->getFlashdata('success'); ?></div>
                             <?php endif ?>
                             <br>
@@ -82,20 +86,21 @@
                     </div>
                     <br>
                     <button type="submit" class="search">Register</button>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function confirmLogout() {
-        return confirm('Are you sure you want to logout?');
-    }
+    <script>
+        function confirmLogout() {
+            return confirm('Are you sure you want to logout?');
+        }
 
-    function confirmDelete() {
-        return confirm('Are you sure you want to delete your account?');
-    }
-</script>
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete your account?');
+        }
+    </script>
 </body>
+
 </html>

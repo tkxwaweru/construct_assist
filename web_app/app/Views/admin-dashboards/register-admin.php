@@ -33,8 +33,8 @@
         <a href="<?php echo site_url('adminProfile'); ?>">Manage Profile</a>
         <a class="active" href="#">Register new Admin</a>
         <a href="<?php echo site_url('viewUsers'); ?>">View User Records</a>
-        <a href="<?php echo site_url('viewProfessionalRatings'); ?>">View Professional Ratings</a>
-        <a href="<?php echo site_url('viewProviderRatings'); ?>">View Provider Ratings</a>
+        <a href="<?php echo site_url('viewProfessionalRatings'); ?>">Professional Reviews</a>
+        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Reviews</a>
         <a class="log-out-button" href="#" onclick="confirmLogout()">Logout</a>
       </div>
     </nav>
@@ -43,7 +43,8 @@
       <h2>Administrator Registration</h2>
       <div class="promo_card">
           <h2>Profile: <?= session('name'); ?></h2>
-          <p>Register a new Administrator:</p><br>
+          <br><br>
+          <h3>Register a new Administrator:</h3>
           <form action="<?php echo base_url('adminRegister')?>" method="post">
           <?php csrf_field(); ?>
           <?php if(!empty(session()->getFlashdata('fail'))) : ?>
@@ -76,8 +77,8 @@
                 <span class="text-danger"><?= isset($validation) ? display_error($validation, 'password') : '' ?></span>
               </div>
               <div class="input-field">
-                <label for="role_id">Role:</label>
-                <input class="form-input" type="text" id="role_id" name="role_id" placeholder="Administrator" value="1" readonly>
+                <label hidden for="role_id">Role:</label>
+                <input class="form-input" type="text" id="role_id" name="role_id" placeholder="Administrator" value="1" readonly style="display: none;">
               </div>
   
             </div>

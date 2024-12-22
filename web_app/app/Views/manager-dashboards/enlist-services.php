@@ -35,7 +35,8 @@
       <h2>Enlist Services</h2>
       <div class="promo_card">
           <h2>Profile: <?= session('name'); ?></h2>
-          <p> Enlist Services:</p>
+          <br>
+          <h3>Service search:</h3>
             <div class="form-container">
                 <form action="<?php echo base_url('searchServices')?>" method="post">
                   <div class="content">
@@ -52,6 +53,61 @@
                     </div>
                   </div>
                   <br>
+                  <div class="content">
+                    <h3>Which county are you looking in?</h3>
+                    <div class="input-field">
+                        <!-- Use an input field with datalist for dynamic searching -->
+                        <input class="input-field" type="text" name="county" id="county" list="county-list" placeholder="Type to search county..." autocomplete="off">
+                        <datalist id="county-list">
+                            <option value="Bomet">
+                            <option value="Bungoma">
+                            <option value="Busia">
+                            <option value="Elgeyo Marakwet">
+                            <option value="Embu">
+                            <option value="Garissa">
+                            <option value="Homa Bay">
+                            <option value="Isiolo">
+                            <option value="Kajiado">
+                            <option value="Kakamega">
+                            <option value="Kericho">
+                            <option value="Kiambu">
+                            <option value="Kilifi">
+                            <option value="Kirinyaga">
+                            <option value="Kisii">
+                            <option value="Kisumu">
+                            <option value="Kitui">
+                            <option value="Kwale">
+                            <option value="Laikipia">
+                            <option value="Lamu">
+                            <option value="Makueni">
+                            <option value="Mandera">
+                            <option value="Marsabit">
+                            <option value="Meru">
+                            <option value="Migori">
+                            <option value="Mombasa">
+                            <option value="Murang'a">
+                            <option value="Nairobi">
+                            <option value="Nakuru">
+                            <option value="Nandi">
+                            <option value="Narok">
+                            <option value="Nyamira">
+                            <option value="Nyandarua">
+                            <option value="Nyanza">
+                            <option value="Samburu">
+                            <option value="Siaya">
+                            <option value="Taita Taveta">
+                            <option value="Tana River">
+                            <option value="Tharaka Nithi">
+                            <option value="Trans Nzoia">
+                            <option value="Turkana">
+                            <option value="Uasin Gishu">
+                            <option value="Vihiga">
+                            <option value="Wajir">
+                            <option value="West Pokot">
+                        </datalist>
+                    </div>
+                </div>
+
                   <button type="submit" class="search">Search</button>  
                 </form>
             </div> 

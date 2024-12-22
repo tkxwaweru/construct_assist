@@ -40,8 +40,8 @@ if (!isset($userInfo['email']) || !isset($userInfo['name'])) {
                 <a href="<?php echo site_url('adminProfile'); ?>">Manage Profile</a>
                 <a href="<?php echo site_url('registerAdmin'); ?>">Register new Admin</a>
                 <a href="<?php echo site_url('viewUsers'); ?>">View User Records</a>
-                <a href="<?php echo site_url('viewProfessionalRatings'); ?>">View Professional Ratings</a>
-                <a href="<?php echo site_url('viewProviderRatings'); ?>">View Provider Ratings</a>
+                <a href="<?php echo site_url('viewProfessionalRatings'); ?>">Professional Reviews</a>
+                <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Reviews</a>
                 <a class="log-out-button" onclick="confirmLogout()">Logout</a>
             </div>
         </nav>
@@ -50,14 +50,7 @@ if (!isset($userInfo['email']) || !isset($userInfo['name'])) {
             <h2>Home</h2>
             <div class="promo_card">
                 <h1>Welcome: <?= $userInfo['name']; ?></h1>
-                <p>This is your dashboard. Use the sidebar to navigate to your desired location.</p>
-                <ol>
-                    <li>Use <b>Manage Profile</b> to update your password or delete your account.</li>
-                    <li>Use <b>Register new Admin</b> to register a new administrator.</li>
-                    <li>Use <b>View User Records</b> to view all user records and either enable or disable accounts.</li>
-                    <li>Use <b>View Professional Ratings</b> to view ratings records for construction professionals.</li>
-                    <li>Use <b>View Provider Ratings</b> to view ratings records for construction service providers.</li>
-                </ol>
+                <p>Use the sidebar to navigate to your desired location.</p>
             </div>
         </div>
     </div>

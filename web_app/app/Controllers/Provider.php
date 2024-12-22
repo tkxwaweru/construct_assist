@@ -33,26 +33,29 @@ class Provider extends BaseController
         $user = $userModel->where('email', $sessionEmail)->first();
 
         if (!$user) {
-           //
+            return redirect()->to('/login')->with('error', 'User not found.');
         }
 
-        // Use user_id to query ProvidersModel for average_rating
+        // Use user_id to query ProfessionalsModel for reliability status
         $providersModel = new ProvidersModel();
-        $averageRating = $providersModel->where('user_id', $user['user_id'])->get()->getRow('average_rating');
+        $result = $providersModel->where('user_id', $user['user_id'])->get()->getRow();
 
-        // Use user_id to query ProviderRatingsModel for all data where user_id = provider_id
-        $providerRatingsModel = new ProviderRatingsModel();
-        $ratings = $providerRatingsModel->where('provider_id', $user['user_id'])->findAll();
+        $reliability = $result->reliable == 1 ? 'Reliable' : 'Unreliable';
+        $reliable_reviews = $result->reliable_reviews ?? 0;
+        $unreliable_reviews = $result->unreliable_reviews ?? 0;
 
         // Prepare the data to pass to the view
         $data = [
-            'averageRating' => $averageRating,
-            'ratings' => $ratings
+            'reliability' => $reliability,
+            'reliable_reviews' => $reliable_reviews,
+            'unreliable_reviews' => $unreliable_reviews
         ];
+
         return view('provider-dashboards/view-provider-ratings', $data);
     }
 
-    public function providerPasswordRequest(){
+    public function providerPasswordRequest()
+    {
         $email = session('email');
 
         $values = ['email' => $email];
@@ -71,11 +74,11 @@ class Provider extends BaseController
             return view('redirects/reset.php');
         } else {
             return redirect()->to('reset')->with('fail', 'Something went wrong, please try again.')->withInput();
-        }  
+        }
     }
-    
+
     public function providerAccountDelete()
-    {           
+    {
         $sessionEmail = session('email');
 
         $userModel = new UserModel();
@@ -92,9 +95,9 @@ class Provider extends BaseController
             $email->setMessage('Good day!<br><br>It seems you have decided to delete your account. We are sorry to see you go.<br>
             Do not worry, you can always recover your account by sending us an email at construct.assist.254@gmail.com and we shall process your request within 24 hours.          
             <br><br>Thank you for using Construct-Assist');
-        
+
             $email->send();
-    
+
             $userModel->update($user['user_id'], ['account_status' => 0]);
         }
         return redirect()->to('login')->with('fail', 'Account deleted.');
@@ -131,5 +134,5 @@ class Provider extends BaseController
             return redirect()->to('providerProfile')->with('fail', 'Update failed, please try again.');
         }
         return redirect()->to('providerProfile')->with('success', 'Account updated successfully.');
-    } 
+    }
 }

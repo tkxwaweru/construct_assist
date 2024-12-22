@@ -39,7 +39,7 @@
         <div class="form-container">
           <form action="<?php echo base_url('rateService')?>" method="post">
             <div class="content">
-              <h3>Rate the quality of service you received from the individual:</h3>
+              <h3>Please provide a review for our AI to analyse:</h3>
               <br>
               <div class="input-field">
                 <label for="name">Name:</label>
@@ -49,17 +49,13 @@
                 <label for="email">Email:</label>
                 <input class="form-input" type="text" id="email" name="email" value="<?= $email ?>" readonly>
               </div>
-              <div class="input-field">
-                <label for="score">Score (out of 5):</label>
-                <input class="form-input-score" type="number" id="score" name="score" placeholder="e.g. 5.00" step="0.01" min="0" max="5" required>
-              </div>
               <div>
-                <label for="comment">Comment:</label>
-                <textarea id="comment" name="comment" rows="10" cols="50" style="resize: none;"></textarea>
+                <label for="comment">Review:</label>
+                <textarea id="comment" name="comment" rows="10" cols="50" style="resize: none;" placeholder="Feel free to use English, Swahili or a mix of both languages."></textarea>
               </div>
             </div>
             <br>
-            <button type="submit" class="search">Rate and Dismiss</button>  
+            <button type="submit" class="search">Dismiss</button>  
           </form>
         </div> 
       </div>
