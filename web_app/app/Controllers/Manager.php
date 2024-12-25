@@ -223,8 +223,7 @@ class Manager extends BaseController
         $email->setSubject('PROJECT RECRUITMENT');
         $email->setMessage('Good day!' . '<br><br>' . 'You have been recruited by ' . $sessionEmail . ' to collaborate on a 
         construction project.<br><br> 
-        This project manager shall contact you with more details. Upon job completion your services shall be rated 
-        (out of 5) by the project manager. You shall receive an email with details on this after you have been rated.<br><br>
+        This project manager shall contact you with more details. Upon job completion your services shall be reviewed. You shall receive an email with details on this after you have been reviewed.<br><br>
             Thank you for using Construct-Assist');
 
         $email->send();
@@ -282,8 +281,7 @@ class Manager extends BaseController
         $email->setSubject('PROJECT RECRUITMENT');
         $email->setMessage('Good day!' . '<br><br>' . 'You have been recruited by ' . $sessionEmail . ' to collaborate on a 
                 construction project.<br><br> 
-                This project manager shall contact you with more details. Upon job completion your services shall be rated 
-                (out of 5) by the project manager. You shall receive an email with details on this after you have been rated.<br><br>
+                This project manager shall contact you with more details. Upon job completion your services shall be reviewed. You shall receive an email with details on this after you have been reviewed.<br><br>
                     Thank you for using Construct-Assist');
 
         $email->send();
