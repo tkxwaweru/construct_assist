@@ -9,5 +9,5 @@ class ProfessionalRatingsModel extends Model
 
   protected $table = 'tbl_professional_reviews';
   protected $primaryKey = 'professional_rating_id';
-  protected $allowedFields = ['professional_id', 'review_text', 'review_sentiment', 'reviewed_on'];
+  protected $allowedFields = ['professionals_user_id', 'review_text', 'review_sentiment', 'reviewed_on'];
 }

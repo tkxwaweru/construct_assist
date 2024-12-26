@@ -37,7 +37,7 @@ class Manager extends BaseController
         return view('manager-dashboards/enlist-services');
     }
 
-    public function    enlistProfessionals()
+    public function enlistProfessionals()
     {
         return view('manager-dashboards/enlist-professionals');
     }
@@ -80,7 +80,7 @@ class Manager extends BaseController
 
                 // Query ProfessionalEngagementsModel for active engagement
                 $professionalEngagement = $professionalEngagementsModel
-                    ->where('professional_id', $user_id)
+                    ->where('professionals_user_id', $user_id)
                     ->where('active_engagement', 1)
                     ->first();
 
@@ -145,7 +145,7 @@ class Manager extends BaseController
 
                 // Query ProviderEngagementsModel for active_engagement
                 $providerEngagement = $providerEngagementsModel
-                    ->where('provider_id', $user_id)
+                    ->where('providers_user_id', $user_id)
                     ->where('active_engagement', 1)
                     ->first();
 
@@ -207,7 +207,7 @@ class Manager extends BaseController
                 $professionalEngagementsModel = new ProfessionalEngagementsModel();
                 $professionalEngagementsModel->insert([
                     'manager_id' => $managerId,
-                    'professional_id' => $professionalId,
+                    'professionals_user_id' => $professionalId,
                     'name' => $professionalName,
                     'email' => $professionalEmail,
                     'phone_number' => $professionalPhoneNumber,
@@ -265,7 +265,7 @@ class Manager extends BaseController
                 $providerEngagementsModel = new ProviderEngagementsModel();
                 $providerEngagementsModel->insert([
                     'manager_id' => $managerId,
-                    'provider_id' => $providerId,
+                    'providers_user_id' => $providerId,
                     'name' => $providerName,
                     'email' => $providerEmail,
                     'phone_number' => $providerPhoneNumber,
@@ -355,40 +355,59 @@ class Manager extends BaseController
         // Retrieve the posted data from the form
         $sessionEmail = session('email');
         $postEmail = $this->request->getPost('email');
-        $score = $this->request->getPost('score');
+        $name = $this->request->getPost('name');
         $comment = $this->request->getPost('comment');
 
-        // Get user_id and role_id based on the posted email
+        // Send comment to API for sentiment analysis
+        $apiUrl = "http://127.0.0.1:8000/predict";
+        $apiData = json_encode(['text' => $comment]);
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $apiData);
+
+        $apiResponse = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$apiResponse) {
+            return redirect()->back()->withInput()->with('error', 'Failed to analyze sentiment.');
+        }
+
+        $sentimentData = json_decode($apiResponse, true);
+        $reviewSentiment = $sentimentData['sentiment'] ?? null;
+
+        if (!$reviewSentiment) {
+            return redirect()->back()->withInput()->with('error', 'Failed to analyze sentiment.');
+        }
+
+        $reviewSentimentBoolean = $reviewSentiment === 'positive' ? 1 : 0;
+
         $userModel = new UserModel();
         $user = $userModel->where('email', $postEmail)->first();
         if (!$user) {
-            // Handle case when user is not found
-            // Redirect or display an error message
+            return redirect()->back()->withInput()->with('error', 'User not found.');
         }
 
         $user_id = $user['user_id'];
         $role_id = $user['role_id'];
 
-        // Process based on role_id
         if ($role_id == 3) {
-            // Insert into ProfessionalRatingsModel
             $professionalRatingsModel = new ProfessionalRatingsModel();
             $professionalRatingsModel->insert([
-                'professional_id' => $user_id,
-                'score' => $score,
-                'comment' => $comment
+                'professionals_user_id' => $user_id,
+                'review_text' => $comment,
+                'review_sentiment' => $reviewSentimentBoolean
             ]);
 
-            // Update average_rating in ProfessionalsModel
             $professionalsModel = new ProfessionalsModel();
-            $professional = $professionalsModel->where('user_id', $user_id)->first();
-            $averageRating = ($professional['average_rating'] + $score) / 2;
-            $professionalsModel->where('user_id', $user_id)->set(['average_rating' => $averageRating])->update();
+            $columnToUpdate = $reviewSentimentBoolean ? 'reliable_reviews' : 'unreliable_reviews';
+            $professionalsModel->set($columnToUpdate, "{$columnToUpdate} + 1", false)
+                ->where('user_id', $user_id)
+                ->update();
 
-
-            // Update ProfessionalEngagementsModel
             $professionalEngagementsModel = new ProfessionalEngagementsModel();
-            $professionalEngagement = $professionalEngagementsModel->where('professional_id', $user_id)
+            $professionalEngagement = $professionalEngagementsModel->where('professionals_user_id', $user_id)
                 ->where('active_engagement', 1)
                 ->first();
             if ($professionalEngagement) {
@@ -398,23 +417,21 @@ class Manager extends BaseController
                 ]);
             }
         } elseif ($role_id == 4) {
-            // Insert into ProviderRatingsModel
             $providerRatingsModel = new ProviderRatingsModel();
             $providerRatingsModel->insert([
-                'provider_id' => $user_id,
-                'score' => $score,
-                'comment' => $comment
+                'providers_user_id' => $user_id,
+                'review_text' => $comment,
+                'review_sentiment' => $reviewSentimentBoolean
             ]);
 
-            // Update average_rating in ProvidersModel
             $providersModel = new ProvidersModel();
-            $provider = $providersModel->where('user_id', $user_id)->first();
-            $averageRating = ($provider['average_rating'] + $score) / 2;
-            $providersModel->where('user_id', $user_id)->set(['average_rating' => $averageRating])->update();
+            $columnToUpdate = $reviewSentimentBoolean ? 'reliable_reviews' : 'unreliable_reviews';
+            $providersModel->set($columnToUpdate, "{$columnToUpdate} + 1", false)
+                ->where('user_id', $user_id)
+                ->update();
 
-            // Update ProviderEngagementsModel
             $providerEngagementsModel = new ProviderEngagementsModel();
-            $providerEngagement = $providerEngagementsModel->where('provider_id', $user_id)
+            $providerEngagement = $providerEngagementsModel->where('providers_user_id', $user_id)
                 ->where('active_engagement', 1)
                 ->first();
             if ($providerEngagement) {
@@ -429,16 +446,30 @@ class Manager extends BaseController
         $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
         $email->setTo($postEmail);
         $email->setSubject('SERVICE RATING');
-        $email->setMessage('Good day!' . '<br><br>' . 'Your Services have been rated a ' . $score . ' (out of 5) by ' . $sessionEmail . '<br><br> 
+        $email->setMessage('Good day!' . '<br><br>' . 'Your Services have been reviewed by ' . $sessionEmail . '<br><br> 
                 Log in to your account to view more details.' . ' ' .
             "<a href='" . base_url('login') . "'> Click here</a>" . '<br><br>' .
             'Thank you for using Construct-Assist');
 
         $email->send();
-        // Redirect or display success message
-        return redirect()->to('managerEngagements');
+
+        // Store the message and sentiment in flashdata
+        $session = session();
+        $session->setFlashdata('apiResponseMessage', "Our AI has classified your review as \"" . $reviewSentiment . "\"");
+        $session->setFlashdata('apiResponseSentiment', $reviewSentiment);
+        $session->setFlashdata('name', $name);
+        $session->setFlashdata('email', $postEmail);
+
+        // Redirect back with input to repopulate the form on error or display flash messages
+        return redirect()->back()->withInput();
+    }
+ 
+    public function rateProceed()
+    {
+        return view('manager-dashboards/view-team');
     }
 
+    public function rateAppeal() {}
 
     public function managerPasswordRequest()
     {

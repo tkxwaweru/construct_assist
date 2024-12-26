@@ -72,6 +72,8 @@ $routes->add('selectProviderEngagement', 'Manager::selectProviderEngagement');
 $routes->add('managerEngagements', 'Manager::managerEngagements');
 $routes->add('rateSelect', 'Manager::rateSelect');
 $routes->add('rateService', 'Manager::rateService');
+$routes->add('rateProceed', 'Manager::rateProceed');
+$routes->add('rateAppeal', 'Manager::rateAppeal');
 $routes->add('managerPasswordRequest', 'Manager::managerPasswordRequest');
 $routes->add('managerAccountDelete', 'Manager::managerAccountDelete');
 

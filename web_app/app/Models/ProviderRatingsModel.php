@@ -9,5 +9,5 @@ class ProviderRatingsModel extends Model
 
   protected $table = 'tbl_provider_reviews';
   protected $primaryKey = 'provider_rating_id';
-  protected $allowedFields = ['provider_id', 'review_text', 'review_sentiment', 'reviewed_on'];
+  protected $allowedFields = ['providers_user_id', 'review_text', 'review_sentiment', 'reviewed_on'];
 }
