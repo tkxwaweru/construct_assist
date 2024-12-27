@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css')?>">
-    <link rel="stylesheet" href="<?= base_url('css/auth-style.css')?>">
+    <link rel="stylesheet" href="<?= base_url('bootstrap/css/bootstrap.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('css/auth-style.css') ?>">
     <title>Registration</title>
     <style>
         #password-guidelines {
@@ -14,7 +15,7 @@
             left: calc(100% + 10px);
             transform: translateY(-50%);
             padding: 5px;
-            width: 250px; 
+            width: 250px;
             background-color: #ffcc5c;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -41,19 +42,22 @@
         }
     </script>
 </head>
+
 <body>
-    <img src="<?= base_url('images/icon.png')?>" alt="logo">
+    <a href="<?= site_url('home') ?>">
+        <img src="<?= base_url('images/icon.png') ?>" alt="logo">
+    </a>
     <div class="container">
         <div class="row" style="margin-top: 45px;">
             <div class="col-md-4 col-md-offset-4 centered-div">
-                <h4>Register your account</h4><br>
-                <form action="<?php echo base_url('processRegistration')?>" method="post">
+                <h4>Register your account</h4>
+                <form action="<?php echo base_url('processRegistration') ?>" method="post">
                     <?php csrf_field(); ?>
-                    <?php if(!empty(session()->getFlashdata('fail'))) : ?>
+                    <?php if (!empty(session()->getFlashdata('fail'))) : ?>
                         <div class="alert alert-danger"><?= session()->getFlashdata('fail'); ?></div>
                     <?php endif ?>
 
-                    <?php if(!empty(session()->getFlashdata('success'))) : ?>
+                    <?php if (!empty(session()->getFlashdata('success'))) : ?>
                         <div class="alert alert-success"><?= session()->getFlashdata('success'); ?></div>
                     <?php endif ?>
 
@@ -94,13 +98,13 @@
                         <span class="text-danger"><?= isset($validation) ? display_error($validation, 'confirmation') : '' ?></span>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block">Sign up</button>  
+                        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
                     </div>
-                    <br>
                     <a href="<?php echo site_url('login'); ?>">I already have an account</a>
                 </form>
             </div>
         </div>
     </div>
 </body>
+
 </html>

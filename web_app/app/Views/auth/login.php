@@ -10,7 +10,9 @@
 </head>
 
 <body>
-    <img src="<?= base_url('images/icon.png') ?>" alt="logo">
+    <a href="<?= site_url('home') ?>">
+        <img src="<?= base_url('images/icon.png') ?>" alt="logo">
+    </a>
     <div class="container">
         <div class="row" style="margin-top: 45px;">
             <div class="left-side">

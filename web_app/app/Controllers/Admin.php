@@ -194,5 +194,19 @@ class Admin extends BaseController
         return redirect()->to('viewUsers');
     }
 
-  
+    public function viewProfessionalAppeals(){
+
+    }
+
+    public function viewProviderAppeals(){
+
+    }
+
+    public function handleAppeal(){
+
+    }
+
+    public function dismissAppeal(){
+
+    }
 }

@@ -19,10 +19,10 @@
 
             <div class="content">
                 <h1>COLLABORATE AND CREATE</h1>
-                <p>Whether you're a project manager, a construction professional or a <br> construction 
-                    service provider, Construct-Assist allows you to collaborate and create.</p>
+                <p>Leverage our AI-driven review analysis which ensures quality recommendations for construction <br>  
+                    service providers and professionals. With Construct-Assist reliability is always assured.</p>
                 <div class="button">
-                    <a href="<?php echo site_url('registration'); ?>">REGISTER NOW</a>
+                    <a href="<?php echo site_url('registration'); ?>">GET STARTED</a>
                 </div>
             </div>
         </div>

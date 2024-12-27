@@ -8,3 +8,29 @@
 .right-side {
   margin-left: 50%;
 }
+
+/*
+.button{
+  margin-top: 40px;
+}
+
+.button a{
+  width: 200px;
+  padding: 15px 35px;
+  text-align: center;
+  border-radius: 35px;
+  font-weight: bold;
+  border: 1px solid #0096FF;
+  background: white;
+  text-decoration: none;
+  color: #0096FF;
+  font-size: 25px;
+  transition: 0.5s ease-in-out;
+}
+
+.button a:hover{
+  color: white;
+  border: 2px solid #0096FF;
+  background-color: #0096FF;
+}
+*/

@@ -292,6 +292,10 @@ class Manager extends BaseController
 
     public function managerEngagements()
     {
+        if (!session('email')) {
+            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
+        }
+        
         // Retrieve the active session email
         $sessionEmail = session('email');
 
@@ -457,8 +461,8 @@ class Manager extends BaseController
         $session = session();
         $session->setFlashdata('apiResponseMessage', "Our AI has classified your review as \"" . $reviewSentiment . "\"");
         $session->setFlashdata('apiResponseSentiment', $reviewSentiment);
-        $session->setFlashdata('name', $name);
-        $session->setFlashdata('email', $postEmail);
+        //$session->setFlashdata('name', $name);
+        //$session->setFlashdata('email', $postEmail);
 
         // Redirect back with input to repopulate the form on error or display flash messages
         return redirect()->back()->withInput();
@@ -466,10 +470,8 @@ class Manager extends BaseController
  
     public function rateProceed()
     {
-        return view('manager-dashboards/view-team');
+        return $this->managerEngagements();
     }
-
-    public function rateAppeal() {}
 
     public function managerPasswordRequest()
     {

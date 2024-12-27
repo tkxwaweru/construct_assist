@@ -86,7 +86,9 @@
     </head>
 
     <body>
-    <img src="<?= base_url('images/icon.png')?>" alt="logo" class="logo">
+    <a href="<?= site_url('home') ?>">
+        <img src="<?= base_url('images/icon.png') ?>" alt="logo">
+    </a>
         <section id="about-section">
             <!-- about left  -->
             <div class="about-left">
@@ -99,10 +101,11 @@
                 <h1>Construct-Assist</h1>
                 <p>
                   Construct-Assist is a tool that enables project managers to recruit a team of individuals 
-                  to aid in their construction projects. Project managers receieve ratings-based recommendations on 
-                  professionals or service providers that have been rated based on previously completed jobs. 
-                  Construct-Assist is a user driven tool that relies on ratings from project managers to generate recommendations 
-                  and to ensure that project managers collaborate with the best team possible.
+                  to aid in their construction projects. Our system only recommends reliable construction profesionals and 
+                  service providers based on past reviews of their work.<br><br>
+                  Our system leverages natural language processing and sentiment analysis to analyse these 
+                  reviews from project managers to and establish whether the service provider or profesional was reliable or unreliable.
+                  Using this technology project managers are always assured quality work through peer reviews.
                 </p>
                 <div class="address">
                     <ul>
