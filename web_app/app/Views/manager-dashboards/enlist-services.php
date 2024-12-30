@@ -27,6 +27,8 @@
         <a href="<?php echo site_url('enlistProfessionals'); ?>">Enlist Professionals</a>
         <a class="active" href="#">Enlist Services</a>
         <a href="<?php echo site_url('managerEngagements'); ?>">View Team</a>
+        <a href="<?php echo site_url('professionalReviews'); ?>">Past Professional Reviews</a>
+        <a href="<?php echo site_url('providerReviews'); ?>">Past Provider Reviews</a>
         <a class="log-out-button" href="#" onclick="confirmLogout()">Logout</a>
       </div>
     </nav>

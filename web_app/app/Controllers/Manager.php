@@ -295,7 +295,7 @@ class Manager extends BaseController
         if (!session('email')) {
             return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
         }
-        
+
         // Retrieve the active session email
         $sessionEmail = session('email');
 
@@ -305,17 +305,45 @@ class Manager extends BaseController
         $managerId = ($manager !== null) ? $manager['user_id'] : null;
 
         if ($managerId !== null) {
-            // Query the ProviderEngagementsModel and ProfessionalEngagementsModel with the managerId and active_engagement = 1
+            // Load necessary models
             $providerEngagementsModel = new ProviderEngagementsModel();
             $professionalEngagementsModel = new ProfessionalEngagementsModel();
+            $professionalsModel = new ProfessionalsModel();
+            $professionsModel = new ProfessionsModel();
+            $providersModel = new ProvidersModel();
+            $servicesModel = new ServicesModel();
 
+            // Query professional engagements
+            $professionalEngagements = $professionalEngagementsModel->where('manager_id', $managerId)
+                ->where('active_engagement', 1)
+                ->findAll();
+
+            // Add profession_name to each professional engagement
+            foreach ($professionalEngagements as &$engagement) {
+                $professional = $professionalsModel->where('user_id', $engagement['professionals_user_id'])->first();
+                if ($professional) {
+                    $profession = $professionsModel->find($professional['profession_id']);
+                    $engagement['profession_name'] = $profession ? $profession['profession_name'] : 'Unknown';
+                } else {
+                    $engagement['profession_name'] = 'Unknown';
+                }
+            }
+
+            // Query provider engagements
             $providerEngagements = $providerEngagementsModel->where('manager_id', $managerId)
                 ->where('active_engagement', 1)
                 ->findAll();
 
-            $professionalEngagements = $professionalEngagementsModel->where('manager_id', $managerId)
-                ->where('active_engagement', 1)
-                ->findAll();
+            // Add service_name to each provider engagement
+            foreach ($providerEngagements as &$engagement) {
+                $provider = $providersModel->where('user_id', $engagement['providers_user_id'])->first();
+                if ($provider) {
+                    $service = $servicesModel->find($provider['service_id']);
+                    $engagement['service_name'] = $service ? $service['service_name'] : 'Unknown';
+                } else {
+                    $engagement['service_name'] = 'Unknown';
+                }
+            }
 
             // Prepare the data array
             $data = [
@@ -326,7 +354,10 @@ class Manager extends BaseController
             // Pass the data array to the view
             return view('manager-dashboards/view-team', $data);
         }
+
+        return redirect()->back()->with('error', 'Manager not found.');
     }
+
 
 
     public function rateSelect()
@@ -388,6 +419,15 @@ class Manager extends BaseController
         $reviewSentimentBoolean = $reviewSentiment === 'positive' ? 1 : 0;
 
         $userModel = new UserModel();
+        
+        // Fetch user_id of the session email
+        $reviewer = $userModel->where('email', $sessionEmail)->first();
+        if (!$reviewer) {
+            return redirect()->back()->withInput()->with('error', 'Reviewer not found.');
+        }
+        $reviewersUserId = $reviewer['user_id'];
+
+        // Fetch user_id and role_id of the target email
         $user = $userModel->where('email', $postEmail)->first();
         if (!$user) {
             return redirect()->back()->withInput()->with('error', 'User not found.');
@@ -401,7 +441,8 @@ class Manager extends BaseController
             $professionalRatingsModel->insert([
                 'professionals_user_id' => $user_id,
                 'review_text' => $comment,
-                'review_sentiment' => $reviewSentimentBoolean
+                'review_sentiment' => $reviewSentimentBoolean,
+                'reviewers_user_id' => $reviewersUserId
             ]);
 
             $professionalsModel = new ProfessionalsModel();
@@ -425,7 +466,8 @@ class Manager extends BaseController
             $providerRatingsModel->insert([
                 'providers_user_id' => $user_id,
                 'review_text' => $comment,
-                'review_sentiment' => $reviewSentimentBoolean
+                'review_sentiment' => $reviewSentimentBoolean,
+                'reviewers_user_id' => $reviewersUserId
             ]);
 
             $providersModel = new ProvidersModel();
@@ -461,16 +503,178 @@ class Manager extends BaseController
         $session = session();
         $session->setFlashdata('apiResponseMessage', "Our AI has classified your review as \"" . $reviewSentiment . "\"");
         $session->setFlashdata('apiResponseSentiment', $reviewSentiment);
-        //$session->setFlashdata('name', $name);
-        //$session->setFlashdata('email', $postEmail);
 
         // Redirect back with input to repopulate the form on error or display flash messages
         return redirect()->back()->withInput();
     }
+
  
     public function rateProceed()
     {
         return $this->managerEngagements();
+    }
+
+    public function professionalReviews()
+    {
+        // Load session and models
+        $sessionEmail = session('email');
+        $userModel = new \App\Models\UserModel();
+        $professionalRatingsModel = new \App\Models\ProfessionalRatingsModel();
+        $professionalsModel = new \App\Models\ProfessionalsModel();
+        $professionsModel = new \App\Models\ProfessionsModel();
+    
+        // Retrieve the user_id based on session email
+        $user = $userModel->where('email', $sessionEmail)->first();
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+        $user_id = $user['user_id'];
+    
+        // Fetch reviews where reviewers_user_id matches the user_id
+        $reviews = $professionalRatingsModel->where('reviewers_user_id', $user_id)->findAll();
+    
+        // Enrich reviews with name and profession_name
+        foreach ($reviews as &$review) {
+            // Find the corresponding professional
+            $professional = $professionalsModel->where('user_id', $review['professionals_user_id'])->first();
+            if ($professional) {
+                // Find the profession name
+                $profession = $professionsModel->where('profession_id', $professional['profession_id'])->first();
+                $review['profession_name'] = $profession ? $profession['profession_name'] : 'Unknown';
+    
+                // Find the professional's name
+                $professionalUser = $userModel->where('user_id', $review['professionals_user_id'])->first();
+                $review['professional_name'] = $professionalUser ? $professionalUser['name'] : 'Unknown';
+            } else {
+                $review['profession_name'] = 'Unknown';
+                $review['professional_name'] = 'Unknown';
+            }
+        }
+    
+        // Pass the enriched data to the view
+        return view('manager-dashboards/past-professional-reviews', ['reviews' => $reviews]);
+    }
+    
+
+    public function providerReviews()
+    {
+        {
+            // Load session and models
+            $sessionEmail = session('email');
+            $userModel = new \App\Models\UserModel();
+            $providerRatingsModel = new \App\Models\ProviderRatingsModel();
+            $providersModel = new \App\Models\ProvidersModel();
+            $servicesModel = new \App\Models\ServicesModel();
+    
+            // Retrieve the user_id based on session email
+            $user = $userModel->where('email', $sessionEmail)->first();
+            if (!$user) {
+                return redirect()->back()->with('error', 'User not found.');
+            }
+            $user_id = $user['user_id'];
+    
+            // Fetch reviews where reviewers_user_id matches the user_id
+            $reviews = $providerRatingsModel->where('reviewers_user_id', $user_id)->findAll();
+    
+            // Enrich reviews with profession_name by joining with ProfessionalsModel and ProfessionsModel
+            foreach ($reviews as &$review) {
+                // Find the corresponding professional
+                $provider = $providersModel->where('user_id', $review['providers_user_id'])->first();
+                if ($provider) {
+                    // Find the profession name
+                    $service = $servicesModel->where('service_id', $provider['service_id'])->first();
+                    $review['service_name'] = $service ? $service['service_name'] : 'Unknown';
+
+                    // Find the professional's name
+                    $providerUser = $userModel->where('user_id', $review['providers_user_id'])->first();
+                    $review['provider_name'] = $providerUser ? $providerUser['name'] : 'Unknown';
+                } else {
+                    $review['service_name'] = 'Unknown';
+                    $review['provider_name'] = 'Unknown';
+                }
+            }
+    
+            // Pass the enriched data to the view
+            return view('manager-dashboards/past-provider-reviews', ['reviews' => $reviews]);
+        }
+    }
+
+    public function professionalSelect()
+    {
+        // Load the model
+        $professionalRatingsModel = new \App\Models\ProfessionalRatingsModel();
+
+        // Get the professional_rating_id from the form submission
+        $professionalRatingId = $this->request->getPost('professional_rating_id');
+
+        if ($professionalRatingId) {
+            // Find the row that matches the professional_rating_id
+            $review = $professionalRatingsModel->find($professionalRatingId);
+
+            if ($review) {
+                // Update the active_appeal field to 1
+                $updateData = ['active_appeal' => 1];
+                $professionalRatingsModel->update($professionalRatingId, $updateData);
+
+                // Return a success response
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Review successfully appealed. Our team shall analyze and handle your appeal promptly. Thank you for using Construct-Assist.'
+                ]);
+            } else {
+                // Return an error response if no review is found
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Review not found.'
+                ]);
+            }
+        } else {
+            // Return an error response if professional_rating_id is missing
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Invalid appeal request.'
+            ]);
+        }
+    }
+
+
+
+    public function providerSelect()
+    {
+        // Load the model
+        $providerRatingsModel = new \App\Models\ProviderRatingsModel();
+
+        // Get the professional_rating_id from the form submission
+        $providerRatingId = $this->request->getPost('provider_rating_id');
+
+        if ($providerRatingId) {
+            // Find the row that matches the professional_rating_id
+            $review = $providerRatingsModel->find($providerRatingId);
+
+            if ($review) {
+                // Update the active_appeal field to 1
+                $updateData = ['active_appeal' => 1];
+                $providerRatingsModel->update($providerRatingId, $updateData);
+
+                // Return a success response
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Review successfully appealed. Our team shall analyze and handle your appeal promptly. Thank you for using Construct-Assist.'
+                ]);
+            } else {
+                // Return an error response if no review is found
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Review not found.'
+                ]);
+            }
+        } else {
+            // Return an error response if professional_rating_id is missing
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Invalid appeal request.'
+            ]);
+        }
     }
 
     public function managerPasswordRequest()

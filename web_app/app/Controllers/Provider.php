@@ -54,14 +54,6 @@ class Provider extends BaseController
         return view('provider-dashboards/view-provider-ratings', $data);
     }
 
-    public function viewReviews(){
-
-    }
-
-    public function reviewAppeal(){
-        
-    }
-
     public function providerPasswordRequest()
     {
         $email = session('email');

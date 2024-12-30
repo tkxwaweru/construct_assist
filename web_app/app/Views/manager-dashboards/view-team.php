@@ -29,6 +29,8 @@
                 <a href="<?php echo site_url('enlistProfessionals'); ?>">Enlist Professionals</a>
                 <a href="<?php echo site_url('enlistServices'); ?>">Enlist Services</a>
                 <a class="active" href="<?php echo site_url('managerEngagements'); ?>">View Team</a>
+                <a href="<?php echo site_url('professionalReviews'); ?>">Past Professional Reviews</a>
+                <a href="<?php echo site_url('providerReviews'); ?>">Past Provider Reviews</a>
                 <a class="log-out-button" href="<?php echo site_url('logout'); ?>" onclick="return confirmLogout()">Logout</a>
             </div>
         </nav>
@@ -47,7 +49,7 @@
                             <th>Phone Number</th>
                             <th>Designation</th>
                             <th>Recruitment Date</th>
-                            <th>Action</th> <!-- Added Action column for rating -->
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,10 +59,9 @@
                                     <td><?= $providerEngagement['name']; ?></td>
                                     <td><?= $providerEngagement['email']; ?></td>
                                     <td><?= $providerEngagement['phone_number']; ?></td>
-                                    <td><?= ($providerEngagement['role_id'] == 3) ? 'Professional' : 'Service provider'; ?></td>
+                                    <td><?= $providerEngagement['service_name'] ?? 'Unknown Service'; ?></td>
                                     <td><?= $providerEngagement['recruitment_date']; ?></td>
                                     <td>
-                                        <!-- Rating button for provider -->
                                         <button type="button" class="enlist-button" onclick="rateService('<?= $providerEngagement['email']; ?>')">Dismiss</button>
                                     </td>
                                 </tr>
@@ -73,10 +74,9 @@
                                     <td><?= $professionalEngagement['name']; ?></td>
                                     <td><?= $professionalEngagement['email']; ?></td>
                                     <td><?= $professionalEngagement['phone_number']; ?></td>
-                                    <td><?= ($professionalEngagement['role_id'] == 3) ? 'Professional' : 'Service provider'; ?></td>
+                                    <td><?= $professionalEngagement['profession_name'] ?? 'Unknown Profession'; ?></td>
                                     <td><?= $professionalEngagement['recruitment_date']; ?></td>
                                     <td>
-                                        <!-- Rating button for professional -->
                                         <button type="button" class="enlist-button" onclick="rateService('<?= $professionalEngagement['email']; ?>')">Dismiss</button>
                                     </td>
                                 </tr>
@@ -85,7 +85,6 @@
                     </tbody>
                 </table>
                 <br><br><br>
-                <!-- Removed the form that was previously used for rating -->
             </div>
         </div>
     </div>
@@ -102,10 +101,7 @@
 
         // Function to set the email and submit the rate form
         function rateService(email) {
-            // Set the email to the hidden input field
             document.getElementById('emailToRate').value = email;
-
-            // Submit the form
             document.getElementById('rateForm').submit();
         }
     </script>

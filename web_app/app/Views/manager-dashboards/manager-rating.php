@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Dashboard.Services</title>
@@ -12,17 +13,21 @@
       margin: 10px;
       font-size: 20px;
     }
+
     .positive {
       color: green;
     }
+
     .negative {
       color: red;
     }
+
     .action-buttons {
       display: flex;
       gap: 10px;
       margin: 10px;
     }
+
     .action-buttons button {
       font-size: 16px;
       border-radius: 8px;
@@ -32,21 +37,25 @@
       transition: all 0.5s;
       cursor: pointer;
     }
+
     .proceed-button {
       border: 1px solid green;
       background-color: white;
       color: green;
     }
+
     .proceed-button:hover {
       border: 1px solid green;
       background-color: green;
       color: white;
     }
+
     .appeal-button {
       border: 1px solid red;
       background-color: white;
       color: red;
     }
+
     .appeal-button:hover {
       border: 1px solid red;
       background-color: red;
@@ -54,6 +63,7 @@
     }
   </style>
 </head>
+
 <body>
   <header class="header">
     <div class="title">
@@ -74,6 +84,8 @@
         <a href="<?= site_url('enlistProfessionals'); ?>">Enlist Professionals</a>
         <a href="<?= site_url('enlistServices'); ?>">Enlist Services</a>
         <a class="active" href="<?= site_url('managerEngagements'); ?>">View Team</a>
+        <a href="<?php echo site_url('professionalReviews'); ?>">Past Professional Reviews</a>
+        <a href="<?php echo site_url('providerReviews'); ?>">Past Provider Reviews</a>
         <a class="log-out-button" href="<?= site_url('logout'); ?>" onclick="return confirmLogout()">Logout</a>
       </div>
     </nav>
@@ -89,14 +101,16 @@
           <div class="response-message <?= session()->getFlashdata('apiResponseSentiment') === 'positive' ? 'positive' : 'negative'; ?>">
             <?= session()->getFlashdata('apiResponseMessage'); ?>
           </div>
-          <p>The individual you reviewed is equipped to make an appeal incase our AI is mistaken.</p>
+          <br>
+          <p>If you disagree with this classification kindly create an appeal within the appropriate
+             past reviews section. Our team shall analyse your review and rectify any issue promptly.</p><br>
           <div class="action-buttons">
             <form action="<?= base_url('rateProceed') ?>" method="post">
               <button type="submit" class="proceed-button">Proceed</button>
             </form>
           </div>
         <?php endif; ?>
-            
+
         <!-- Form Container -->
         <div id="form-container" class="form-container">
           <form action="<?= base_url('rateService') ?>" method="post">
@@ -138,4 +152,5 @@
     });
   </script>
 </body>
+
 </html>

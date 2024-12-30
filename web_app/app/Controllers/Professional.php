@@ -55,14 +55,6 @@ class Professional extends BaseController
         return view('professional-dashboards/view-professionals-ratings', $data);
     }
 
-    public function viewReviews(){
-
-    }
-
-    public function reviewAppeal(){
-        
-    }
-
     public function professionalPasswordRequest()
     {
         $email = session('email');
