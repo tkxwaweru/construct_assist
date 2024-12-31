@@ -419,7 +419,7 @@ class Manager extends BaseController
         $reviewSentimentBoolean = $reviewSentiment === 'positive' ? 1 : 0;
 
         $userModel = new UserModel();
-        
+
         // Fetch user_id of the session email
         $reviewer = $userModel->where('email', $sessionEmail)->first();
         if (!$reviewer) {
@@ -491,9 +491,10 @@ class Manager extends BaseController
         $email = \Config\Services::email();
         $email->setFrom('construct.assist.254@gmail.com', 'Construct-Assist');
         $email->setTo($postEmail);
-        $email->setSubject('SERVICE RATING');
-        $email->setMessage('Good day!' . '<br><br>' . 'Your Services have been reviewed by ' . $sessionEmail . '<br><br> 
-                Log in to your account to view more details.' . ' ' .
+        $email->setSubject('YOUR PERFORMANCE HAS BEEN REVIEWED.');
+        $email->setMessage('Good day!' . '<br><br>' . 'Your past performance has received a ' . $reviewSentiment . ' review by ' . $sessionEmail . '. As such your engagement 
+        with this construction project manager is now completed.' . '<br><br> 
+                Log in to your account to view more details on your reliability status.' . ' ' .
             "<a href='" . base_url('login') . "'> Click here</a>" . '<br><br>' .
             'Thank you for using Construct-Assist');
 
@@ -508,7 +509,7 @@ class Manager extends BaseController
         return redirect()->back()->withInput();
     }
 
- 
+
     public function rateProceed()
     {
         return $this->managerEngagements();
@@ -522,17 +523,17 @@ class Manager extends BaseController
         $professionalRatingsModel = new \App\Models\ProfessionalRatingsModel();
         $professionalsModel = new \App\Models\ProfessionalsModel();
         $professionsModel = new \App\Models\ProfessionsModel();
-    
+
         // Retrieve the user_id based on session email
         $user = $userModel->where('email', $sessionEmail)->first();
         if (!$user) {
             return redirect()->back()->with('error', 'User not found.');
         }
         $user_id = $user['user_id'];
-    
+
         // Fetch reviews where reviewers_user_id matches the user_id
         $reviews = $professionalRatingsModel->where('reviewers_user_id', $user_id)->findAll();
-    
+
         // Enrich reviews with name and profession_name
         foreach ($reviews as &$review) {
             // Find the corresponding professional
@@ -541,7 +542,7 @@ class Manager extends BaseController
                 // Find the profession name
                 $profession = $professionsModel->where('profession_id', $professional['profession_id'])->first();
                 $review['profession_name'] = $profession ? $profession['profession_name'] : 'Unknown';
-    
+
                 // Find the professional's name
                 $professionalUser = $userModel->where('user_id', $review['professionals_user_id'])->first();
                 $review['professional_name'] = $professionalUser ? $professionalUser['name'] : 'Unknown';
@@ -550,32 +551,31 @@ class Manager extends BaseController
                 $review['professional_name'] = 'Unknown';
             }
         }
-    
+
         // Pass the enriched data to the view
         return view('manager-dashboards/past-professional-reviews', ['reviews' => $reviews]);
     }
-    
+
 
     public function providerReviews()
-    {
-        {
+    { {
             // Load session and models
             $sessionEmail = session('email');
             $userModel = new \App\Models\UserModel();
             $providerRatingsModel = new \App\Models\ProviderRatingsModel();
             $providersModel = new \App\Models\ProvidersModel();
             $servicesModel = new \App\Models\ServicesModel();
-    
+
             // Retrieve the user_id based on session email
             $user = $userModel->where('email', $sessionEmail)->first();
             if (!$user) {
                 return redirect()->back()->with('error', 'User not found.');
             }
             $user_id = $user['user_id'];
-    
+
             // Fetch reviews where reviewers_user_id matches the user_id
             $reviews = $providerRatingsModel->where('reviewers_user_id', $user_id)->findAll();
-    
+
             // Enrich reviews with profession_name by joining with ProfessionalsModel and ProfessionsModel
             foreach ($reviews as &$review) {
                 // Find the corresponding professional
@@ -593,7 +593,7 @@ class Manager extends BaseController
                     $review['provider_name'] = 'Unknown';
                 }
             }
-    
+
             // Pass the enriched data to the view
             return view('manager-dashboards/past-provider-reviews', ['reviews' => $reviews]);
         }

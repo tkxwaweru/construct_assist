@@ -64,8 +64,8 @@
         <a href="<?php echo site_url('adminProfile'); ?>">Manage Profile</a>
         <a href="<?php echo site_url('registerAdmin'); ?>">Register new Admin</a>
         <a class="active" href="#">View User Records</a>
-        <a href="<?php echo site_url('viewProfessionalRatings'); ?>">Professional Reviews</a>
-        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Reviews</a>
+        <a href="<?php echo site_url('viewProfessionalRatings'); ?>">Professional Review Appeals</a>
+        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Review Appeals</a>
         <a class="log-out-button" href="#" onclick="confirmLogout()">Logout</a>
       </div>
     </nav>

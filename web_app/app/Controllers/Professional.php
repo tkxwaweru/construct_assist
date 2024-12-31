@@ -41,9 +41,16 @@ class Professional extends BaseController
         $professionalsModel = new ProfessionalsModel();
         $result = $professionalsModel->where('user_id', $user['user_id'])->get()->getRow();
 
-        $reliability = $result->reliable == 1 ? 'Reliable' : 'Unreliable';
-        $reliable_reviews = $result->reliable_reviews ?? 0;
-        $unreliable_reviews = $result->unreliable_reviews ?? 0;
+        // Handle null $result and set default values
+        if ($result) {
+            $reliability = $result->reliable == 1 ? 'Reliable' : 'Unreliable';
+            $reliable_reviews = $result->reliable_reviews ?? 0;
+            $unreliable_reviews = $result->unreliable_reviews ?? 0;
+        } else {
+            $reliability = null; // Indicates no data available
+            $reliable_reviews = null;
+            $unreliable_reviews = null;
+        }
 
         // Prepare the data to pass to the view
         $data = [
@@ -110,6 +117,8 @@ class Professional extends BaseController
         $sessionEmail = session('email');
         $professionId = $this->request->getPost('profession_id');
         $certificationFile = $this->request->getFile('certification_file');
+        $company = $this->request->getPost('company');
+        $county = $this->request->getPost('county');
 
         // Use session email to query the UserModel for user_id
         $userModel = new UserModel();
@@ -123,7 +132,9 @@ class Professional extends BaseController
             $data = [
                 'user_id' => $user['user_id'],
                 'profession_id' => $professionId,
-                'certification_file' => $fileContents
+                'certification_file' => $fileContents,
+                'company' => $company,
+                'county' => $county
             ];
 
             // Store the data into ProfessionalsModel

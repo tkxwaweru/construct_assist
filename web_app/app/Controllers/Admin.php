@@ -37,15 +37,21 @@ class Admin extends BaseController
     public function viewProfessionalRatings()
     {
         $professionalModel = new ProfessionalRatingsModel();
-        $data['professional_ratings'] = $professionalModel->findAll(); // Retrieve all user records
-        
+        // Fetch records where active_appeal = 1
+        $data['professional_ratings'] = $professionalModel
+            ->where('active_appeal', 1)
+            ->findAll();
+
         return view('admin-dashboards/view-professional-ratings', $data);
     }
 
     public function viewProviderRatings()
     {
         $providerModel = new ProviderRatingsModel();
-        $data['provider_ratings'] = $providerModel->findAll(); // Retrieve all user records
+        // Fetch records where active_appeal = 1
+        $data['provider_ratings'] = $providerModel
+            ->where('active_appeal', 1)
+            ->findAll();
 
         return view('admin-dashboards/view-provider-ratings', $data);
     }
@@ -194,19 +200,176 @@ class Admin extends BaseController
         return redirect()->to('viewUsers');
     }
 
-    public function viewProfessionalAppeals(){
+    public function handleProfessionalAppeal()
+    {
+        // Load the models
+        $professionalRatingsModel = new \App\Models\ProfessionalRatingsModel();
+        $professionalsModel = new \App\Models\ProfessionalsModel();
 
+        // Get posted data
+        $professionalRatingId = $this->request->getPost('professional_rating_id');
+        $professionalsUserId = $this->request->getPost('professionals_user_id');
+
+        if (!$professionalRatingId || !$professionalsUserId) {
+            return $this->response->setStatusCode(400, 'Invalid request data.');
+        }
+
+        // Fetch the rating row
+        $ratingRow = $professionalRatingsModel->find($professionalRatingId);
+        if (!$ratingRow || $ratingRow['professionals_user_id'] != $professionalsUserId) {
+            return $this->response->setStatusCode(404, 'Rating not found.');
+        }
+
+        // Determine review sentiment and perform updates
+        $reviewSentiment = $ratingRow['review_sentiment'];
+        $professionalsRow = $professionalsModel->where('user_id', $professionalsUserId)->first();
+
+        if (!$professionalsRow) {
+            return $this->response->setStatusCode(404, 'Professional not found.');
+        }
+
+        if ($reviewSentiment == 1) {
+            // Positive review: Change review_sentiment to 0 and update appeal status
+            $professionalRatingsModel->update($professionalRatingId, [
+                'active_appeal' => 0,
+                'review_sentiment' => 0  // Change review sentiment from 1 to 0
+            ]);
+
+            // Update professional's review counts
+            $professionalsModel->update($professionalsRow['professional_id'], [
+                'reliable_reviews' => $professionalsRow['reliable_reviews'] - 1,
+                'unreliable_reviews' => $professionalsRow['unreliable_reviews'] + 1,
+            ]);
+        } elseif ($reviewSentiment == 0) {
+            // Negative review: Change review_sentiment to 1 and update appeal status
+            $professionalRatingsModel->update($professionalRatingId, [
+                'active_appeal' => 0,
+                'review_sentiment' => 1  // Change review sentiment from 0 to 1
+            ]);
+
+            // Update professional's review counts
+            $professionalsModel->update($professionalsRow['professional_id'], [
+                'reliable_reviews' => $professionalsRow['reliable_reviews'] + 1,
+                'unreliable_reviews' => $professionalsRow['unreliable_reviews'] - 1,
+            ]);
+        } else {
+            return $this->response->setStatusCode(400, 'Invalid review sentiment.');
+        }
+
+        return redirect()->to('viewProfessionalRatings');
     }
 
-    public function viewProviderAppeals(){
+    public function handleProviderAppeal()
+    {
+        // Load the models
+        $providerRatingsModel = new \App\Models\ProviderRatingsModel();
+        $providersModel = new \App\Models\ProvidersModel();
 
+        // Get posted data
+        $providerRatingId = $this->request->getPost('provider_rating_id');
+        $providersUserId = $this->request->getPost('providers_user_id');
+
+        if (!$providerRatingId || !$providersUserId) {
+            return $this->response->setStatusCode(400, 'Invalid request data.');
+        }
+
+        // Fetch the rating row
+        $ratingRow = $providerRatingsModel->find($providerRatingId);
+        if (!$ratingRow || $ratingRow['providers_user_id'] != $providersUserId) {
+            return $this->response->setStatusCode(404, 'Rating not found.');
+        }
+
+        // Determine review sentiment and perform updates
+        $reviewSentiment = $ratingRow['review_sentiment'];
+        $providersRow = $providersModel->where('user_id', $providersUserId)->first();
+
+        if (!$providersRow) {
+            return $this->response->setStatusCode(404, 'Provider not found.');
+        }
+
+        if ($reviewSentiment == 1) {
+            // Positive review: Change review_sentiment to 0 and update appeal status
+            $providerRatingsModel->update($providerRatingId, [
+                'active_appeal' => 0,
+                'review_sentiment' => 0  // Change review sentiment from 1 to 0
+            ]);
+
+            // Update professional's review counts
+            $providersModel->update($providersRow['provider_id'], [
+                'reliable_reviews' => $providersRow['reliable_reviews'] - 1,
+                'unreliable_reviews' => $providersRow['unreliable_reviews'] + 1,
+            ]);
+        } elseif ($reviewSentiment == 0) {
+            // Negative review: Change review_sentiment to 1 and update appeal status
+            $providerRatingsModel->update($providerRatingId, [
+                'active_appeal' => 0,
+                'review_sentiment' => 1  // Change review sentiment from 0 to 1
+            ]);
+
+            // Update professional's review counts
+            $providersModel->update($providersRow['provider_id'], [
+                'reliable_reviews' => $providersRow['reliable_reviews'] + 1,
+                'unreliable_reviews' => $providersRow['unreliable_reviews'] - 1,
+            ]);
+        } else {
+            return $this->response->setStatusCode(400, 'Invalid review sentiment.');
+        }
+
+        return redirect()->to('viewProviderRatings');
     }
 
-    public function handleAppeal(){
+    public function dismissProfessionalAppeal()
+    {
+        // Load the model
+        $professionalRatingsModel = new \App\Models\ProfessionalRatingsModel();
 
+        // Get posted data
+        $professionalRatingId = $this->request->getPost('professional_rating_id');
+
+        // Validate the input
+        if (!$professionalRatingId) {
+            return $this->response->setStatusCode(400, 'Invalid request data.');
+        }
+
+        // Fetch the rating row
+        $ratingRow = $professionalRatingsModel->find($professionalRatingId);
+        if (!$ratingRow) {
+            return $this->response->setStatusCode(404, 'Rating not found.');
+        }
+
+        // Update the active_appeal field to 0
+        $professionalRatingsModel->update($professionalRatingId, [
+            'active_appeal' => 0
+        ]);
+
+        // Redirect to the viewProfessionalRatings page
+        return redirect()->to('viewProfessionalRatings');
     }
 
-    public function dismissAppeal(){
 
+    public function dismissProviderAppeal(){
+        // Load the models
+        $providerRatingsModel = new \App\Models\ProviderRatingsModel();
+
+        // Get posted data
+        $providerRatingId = $this->request->getPost('provider_rating_id');
+
+        // Validate the input
+        if (!$providerRatingId) {
+            return $this->response->setStatusCode(400, 'Invalid request data.');
+        }
+
+        // Fetch the rating row
+        $ratingRow = $providerRatingsModel->find($providerRatingId);
+        if (!$ratingRow) {
+            return $this->response->setStatusCode(404, 'Rating not found.');
+        }
+
+        // Update the active_appeal field to 0
+        $providerRatingsModel->update($providerRatingId, [
+            'active_appeal' => 0
+        ]);
+
+        return redirect()->to('viewProviderRatings');
     }
 }

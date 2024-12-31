@@ -40,9 +40,15 @@ class Provider extends BaseController
         $providersModel = new ProvidersModel();
         $result = $providersModel->where('user_id', $user['user_id'])->get()->getRow();
 
+        if($result){
         $reliability = $result->reliable == 1 ? 'Reliable' : 'Unreliable';
         $reliable_reviews = $result->reliable_reviews ?? 0;
         $unreliable_reviews = $result->unreliable_reviews ?? 0;
+        } else {
+            $reliability = null; // Indicates no data available
+            $reliable_reviews = null;
+            $unreliable_reviews = null;
+        }
 
         // Prepare the data to pass to the view
         $data = [
@@ -110,6 +116,7 @@ class Provider extends BaseController
         $serviceId = $this->request->getPost('service_id');
         $certificationFile = $this->request->getFile('certification_file');
         $company = $this->request->getPost('company');
+        $county = $this->request->getPost('county');
 
         // Use session email to query the UserModel for user_id
         $userModel = new UserModel();
@@ -124,7 +131,8 @@ class Provider extends BaseController
                 'user_id' => $user['user_id'],
                 'service_id' => $serviceId,
                 'company' => $company,
-                'certification_file' => $fileContents
+                'certification_file' => $fileContents,
+                'county' => $county
             ];
 
             // Store the data into ProfessionalsModel

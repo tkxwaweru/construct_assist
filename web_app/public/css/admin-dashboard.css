@@ -321,3 +321,49 @@ textarea {
 .promo_card-table {
   max-width: 1150px;
 }
+
+.correct-button {
+  border: 1px solid green;
+  background-color: white;
+  color: green;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  transition: all 0.5s;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.correct-button:hover {
+  border: 1px solid green;
+  background-color: green;
+  color: white;
+}
+
+.correct-button:hover {
+  opacity: 0.5;
+}
+
+.dismiss-button {
+  border: 1px solid red;
+  background-color: white;
+  color: red;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  transition: all 0.5s;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.dismiss-button:hover {
+  border: 1px solid red;
+  background-color: red;
+  color: white;
+}
+
+.dismiss-button:hover {
+  opacity: 0.5;
+}

@@ -75,8 +75,63 @@
                             </div>
                             <br>
                             <div class="input-field">
-                                <label for="company">What company do you represent:</label>
+                                <label for="company">What company do you represent?</label>
                                 <input class="form-input" type="text" id="company" name="company">
+                            </div>
+                            <br>
+                            <div class="input-field">
+                                <label for="county">Which county do you work in?</label>
+                                <div class="input-field">
+                                <!-- Use an input field with datalist for dynamic searching -->
+                                    <input class="input-field" type="text" name="county" id="county" list="county-list" placeholder="Type to search county..." autocomplete="off">
+                                    <datalist id="county-list">
+                                        <option value="Bomet">
+                                        <option value="Bungoma">
+                                        <option value="Busia">
+                                        <option value="Elgeyo Marakwet">
+                                        <option value="Embu">
+                                        <option value="Garissa">
+                                        <option value="Homa Bay">
+                                        <option value="Isiolo">
+                                        <option value="Kajiado">
+                                        <option value="Kakamega">
+                                        <option value="Kericho">
+                                        <option value="Kiambu">
+                                        <option value="Kilifi">
+                                        <option value="Kirinyaga">
+                                        <option value="Kisii">
+                                        <option value="Kisumu">
+                                        <option value="Kitui">
+                                        <option value="Kwale">
+                                        <option value="Laikipia">
+                                        <option value="Lamu">
+                                        <option value="Makueni">
+                                        <option value="Mandera">
+                                        <option value="Marsabit">
+                                        <option value="Meru">
+                                        <option value="Migori">
+                                        <option value="Mombasa">
+                                        <option value="Murang'a">
+                                        <option value="Nairobi">
+                                        <option value="Nakuru">
+                                        <option value="Nandi">
+                                        <option value="Narok">
+                                        <option value="Nyamira">
+                                        <option value="Nyandarua">
+                                        <option value="Nyanza">
+                                        <option value="Samburu">
+                                        <option value="Siaya">
+                                        <option value="Taita Taveta">
+                                        <option value="Tana River">
+                                        <option value="Tharaka Nithi">
+                                        <option value="Trans Nzoia">
+                                        <option value="Turkana">
+                                        <option value="Uasin Gishu">
+                                        <option value="Vihiga">
+                                        <option value="Wajir">
+                                        <option value="West Pokot">
+                                    </datalist>
+                                </div>
                             </div>
                             <br>
                             <button type="submit" class="search">Register</button>

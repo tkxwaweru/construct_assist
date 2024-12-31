@@ -4,13 +4,31 @@
   <meta charset="UTF-8" />
   <title>Dashboard.Professional.Ratings</title>
   <link rel="stylesheet" href="<?= base_url('css/admin-dashboard.css') ?>">
-  <!-- Font Awesome Cdn Link -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+  <style>
+    /* Hide the professional_rating_id column */
+    .hidden-column {
+      display: none;
+    }
+  </style>
   <script>
     function confirmLogout() {
       if (confirm("Are you sure you want to logout?")) {
         window.location.href = "<?php echo site_url('logout'); ?>";
       }
+    }
+
+    // Function to handle "Correct" button click
+    function correctAppeal(professionalRatingId, professionalUserId) {
+      document.getElementById('correctRatingId').value = professionalRatingId;
+      document.getElementById('correctUserId').value = professionalUserId;
+      document.getElementById('correctForm').submit();
+    }
+
+    // Function to handle "Dismiss" button click
+    function dismissAppeal(professionalRatingId) {
+      document.getElementById('dismissRatingId').value = professionalRatingId;
+      document.getElementById('dismissForm').submit();
     }
   </script>
 </head>
@@ -33,39 +51,69 @@
         <a href="<?php echo site_url('adminProfile'); ?>">Manage Profile</a>
         <a href="<?php echo site_url('registerAdmin'); ?>">Register new Admin</a>
         <a href="<?php echo site_url('viewUsers'); ?>">View User Records</a>
-        <a class="active" href="#">Professional Reviews</a>
-        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Reviews</a>
+        <a class="active" href="#">Professional Review Appeals</a>
+        <a href="<?php echo site_url('viewProviderRatings'); ?>">Provider Review Appeals</a>
         <a class="log-out-button" href="#" onclick="confirmLogout()">Logout</a>
       </div>
     </nav>
 
     <div class="main-body">
-      <h2>Professional Ratings</h2>
+      <h2>Appealed Professional Reviews</h2>
       <div class="promo_card">
-          <h2>Profile: <?= session('name'); ?></h2>
-          <p>Professional ratings:</p><br>
-          <table>
+        <h2>Profile: <?= session('name'); ?></h2>
+        <p>Professional reviews with active appeals:</p><br>
+        <table border="1">
+          <thead>
             <tr>
               <th>Index</th>
+              <th class="hidden-column">professional_rating_id</th>
               <th>Professional ID</th>
               <th>Review text</th>
               <th>Review sentiment</th>
               <th>Reviewed on</th>
+              <th>Correct</th>
+              <th>Dismiss</th>
             </tr>
-            <tr>
-            <?php foreach ($professional_ratings as $professional_rating): ?>
+          </thead>
+          <tbody>
+            <?php if (!empty($professional_ratings)) : ?>
+              <?php foreach ($professional_ratings as $index => $professional_rating) : ?>
+                <tr>
+                  <td><?= $index + 1; ?></td>
+                  <td class="hidden-column"><?= esc($professional_rating['professional_rating_id']); ?></td>
+                  <td><?= esc($professional_rating['professionals_user_id']); ?></td>
+                  <td><?= esc($professional_rating['review_text']); ?></td>
+                  <td><?= $professional_rating['review_sentiment'] ? 'Positive' : 'Negative'; ?></td>
+                  <td><?= esc($professional_rating['reviewed_on']); ?></td>
+                  <td>
+                    <button type="button" class="correct-button" 
+                      onclick="correctAppeal('<?= esc($professional_rating['professional_rating_id']); ?>', '<?= esc($professional_rating['professionals_user_id']); ?>')">Correct</button>
+                  </td>
+                  <td>
+                    <button type="button" class="dismiss-button" 
+                      onclick="dismissAppeal('<?= esc($professional_rating['professional_rating_id']); ?>')">Dismiss</button>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php else : ?>
               <tr>
-                <td><?= $professional_rating['professional_rating_id']; ?></td>
-                <td><?= $professional_rating['professional_id']; ?></td>
-                <td><?= $professional_rating['review_text']; ?></td>
-                <td><?= $professional_rating['review_sentiment']; ?></td>
-                <td><?= $professional_rating['reviewed_on']; ?></td>
+                <td colspan="8">No active appeals found.</td>
               </tr>
-            <?php endforeach; ?>
-            </tr>
-          </table>
+            <?php endif; ?>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+
+  <!-- Hidden Forms -->
+  <form id="correctForm" action="<?= base_url('handleProfessionalAppeal') ?>" method="post" style="display:none;">
+    <input type="hidden" name="professional_rating_id" id="correctRatingId" value="">
+    <input type="hidden" name="professionals_user_id" id="correctUserId" value="">
+  </form>
+
+  <form id="dismissForm" action="<?= base_url('dismissProfessionalAppeal') ?>" method="post" style="display:none;">
+    <input type="hidden" name="professional_rating_id" id="dismissRatingId" value="">
+  </form>
 </body>
 </html>

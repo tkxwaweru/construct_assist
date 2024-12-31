@@ -104,7 +104,7 @@
                   to aid in their construction projects. Our system only recommends reliable construction profesionals and 
                   service providers based on past reviews of their work.<br><br>
                   Our system leverages natural language processing and sentiment analysis to analyse these 
-                  reviews from project managers to and establish whether the service provider or profesional was reliable or unreliable.
+                  reviews from project managers to establish whether the service provider or profesional was reliable or unreliable.
                   Using this technology project managers are always assured quality work through peer reviews.
                 </p>
                 <div class="address">

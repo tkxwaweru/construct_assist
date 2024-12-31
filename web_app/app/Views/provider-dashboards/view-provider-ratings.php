@@ -35,47 +35,53 @@
         <div class="main-body">
             <h2>Reliability status</h2>
             <div class="promo_card">
-                <h2>Profile: <?= session('name'); ?></h2>
+                <?php if (is_null($reliability) || (is_null($reliable_reviews) && is_null($unreliable_reviews))) : ?>
+                    <p>
+                        Kindly proceed to the "Manage profile" section to update your account details and gain verification before you can view your review breakdown.
+                    </p>
+                <?php else : ?>
+                    <h2>Profile: <?= session('name'); ?></h2>
 
-                <!-- Reliability Status -->
-                <p>Your reliability:
-                    <b
+                    <!-- Reliability Status -->
+                    <p>Your reliability:
+                        <b
+                            style="color: <?= $reliability === 'Reliable' ? 'green' : 'red'; ?>;">
+                            <?= $reliability ?? 'N/A'; ?>
+                        </b>
+                    </p>
+
+                    <!-- Conditional Message -->
+                    <p
                         style="color: <?= $reliability === 'Reliable' ? 'green' : 'red'; ?>;">
-                        <?= $reliability ?? 'N/A'; ?>
-                    </b>
-                </p>
+                        <?= $reliability === 'Reliable'
+                            ? 'You are more likely to be recommended to project managers.'
+                            : 'You are less likely to be recommended to project managers.'; ?>
+                    </p>
 
-                <!-- Conditional Message -->
-                <p
-                    style="color: <?= $reliability === 'Reliable' ? 'green' : 'red'; ?>;">
-                    <?= $reliability === 'Reliable'
-                        ? 'You are more likely to be recommended to project managers.'
-                        : 'You are less likely to be recommended to project managers.'; ?>
-                </p>
+                    <!-- Reviews Breakdown -->
+                    <br>
+                    <h2>Reviews Breakdown</h2>
+                    <canvas id="reviewsPieChart" width="400" height="400"></canvas>
 
-                <!-- Reviews Breakdown -->
-                <br>
-                <h2>Reviews Breakdown</h2>
-                <canvas id="reviewsPieChart" width="400" height="400"></canvas>
-
-                <style>
-                    #reviewsPieChart {
-                        max-width: 200px;
-                        max-height: 200px;
-                        margin: 0 auto;
-                    }
-                </style>
-                <br>
-                <table class="user-table">
-                    <tr>
-                        <th>Reliable reviews</th>
-                        <th>Unreliable reviews</th>
-                    </tr>
-                    <tr>
-                        <td><?= $reliable_reviews ?? 0; ?></td>
-                        <td><?= $unreliable_reviews ?? 0; ?></td>
-                    </tr>
-                </table>
+                    <style>
+                        #reviewsPieChart {
+                            max-width: 200px;
+                            max-height: 200px;
+                            margin: 0 auto;
+                        }
+                    </style>
+                    <br>
+                    <table class="user-table">
+                        <tr>
+                            <th>Reliable reviews</th>
+                            <th>Unreliable reviews</th>
+                        </tr>
+                        <tr>
+                            <td><?= $reliable_reviews ?? 0; ?></td>
+                            <td><?= $unreliable_reviews ?? 0; ?></td>
+                        </tr>
+                    </table>
+                <?php endif; ?>
             </div>
         </div>
 
