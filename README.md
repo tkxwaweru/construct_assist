@@ -4,11 +4,11 @@
 
 ## Quick Links
 
-- [Introduction]()
+- [Introduction](https://github.com/tkxwaweru/construct_assist?tab=readme-ov-file#introduction)
 
-- [Project installation]()
+- [Project installation](https://github.com/tkxwaweru/construct_assist?tab=readme-ov-file#project-installation)
 
-- [Running the project]()
+- [Running the project](https://github.com/tkxwaweru/construct_assist?tab=readme-ov-file#running-the-project)
 
 ## Introduction
 
