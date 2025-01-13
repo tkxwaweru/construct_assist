@@ -76,7 +76,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>Unfortunately a professional could be found based on the following criteria (reliability, availability & county).</p>
+                    <p>Unfortunately a professional could not be found based on the following criteria (reliability, availability & county).</p>
                 <?php endif; ?>
             </div>
 

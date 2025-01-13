@@ -40,7 +40,7 @@
             <br>
             <!-- Display Results Table -->
             <div class="promo_card">
-            <?php if (isset($providersData) && !empty($providersData)): ?>
+                <?php if (isset($providersData) && !empty($providersData)): ?>
                     <h3>Search Results for "<?= esc($service_name); ?>" in "<?= esc($county); ?>"</h3>
                     <br>
                     <table class="results-table">
@@ -75,7 +75,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>Unfortunately a service provider could be found based on the following criteria (reliability, availability & county).</p>
+                    <p>Unfortunately a service provider could not be found based on the following criteria (reliability, availability & county).</p>
                 <?php endif; ?>
             </div>
 
